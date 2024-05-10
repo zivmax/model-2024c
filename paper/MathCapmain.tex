@@ -19,9 +19,14 @@
         sheet = true, titleinsheet = false, keywordsinsheet = true,
         titlepage = true, abstract = true}
 \usepackage{xurl}
-\setmainfont{Times New Roman}
+\setmainfont[
+  Path=fonts/TimesNewRoman/,
+  UprightFont = *-Regular,
+  BoldFont = *-Bold,
+  ItalicFont = *-Italic,
+]{TimesNewRoman}
 \setmonofont[
-    Path=fonts/,
+    Path=fonts/UbuntuMono/,
     UprightFont = *-Regular,
     BoldFont = *-Bold,
     ItalicFont = *-Italic
