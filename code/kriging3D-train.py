@@ -48,12 +48,12 @@ def compose_krige3D(name: str, sample_frac: float, variogram: str):
     
     return ok3d
 
-ok3d_poro = compose_krige3D("Porosity", 0.3, 'hole-effect')
 from pickle import dump
-with open('ok3d_poro.pkl', 'wb') as file:
+
+ok3d_poro = compose_krige3D("Porosity", 0.3, 'hole-effect')
+with open('models/ok3d_poro.pkl', 'wb') as file:
     dump(ok3d_poro, file)
     
 ok3d_hydr = compose_krige3D("Porosity", 0.3, 'hole-effect')
-from pickle import dump
-with open('ok3d_hydr.pkl', 'wb') as file:
+with open('models/ok3d_hydr.pkl', 'wb') as file:
     dump(ok3d_hydr, file)
