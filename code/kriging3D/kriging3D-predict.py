@@ -44,11 +44,15 @@ with open('data/grid.pkl', 'wb') as f:
 ok3d_poro = load_model('poro')
 t_poro, ss3d_poro = ok3d_poro.execute('grid', *grid)
 with open('data/t_poro.pkl', 'wb') as f:
+    pickle.dump(t_poro, f)
+with open('data/ss3d_poro.pkl', 'wb') as f:
     pickle.dump(ss3d_poro, f)
 
 ### Kriging Interpolation of Hydrate Saturation
 ok3d_hydr = load_model('hydr')
 t_hydr, ss3d_hydr = ok3d_hydr.execute('grid', *grid)
 with open('data/t_hydr.pkl', 'wb') as f:
+    pickle.dump(t_hydr, f)
+with open('data/ss3d_hydr.pkl', 'wb') as f:
     pickle.dump(ss3d_hydr, f)
     
