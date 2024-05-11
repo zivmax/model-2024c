@@ -1,6 +1,7 @@
 import pandas as pd
-
 from loadAndPreprocess import load_and_preprocess
+from pykrige.ok3d import OrdinaryKriging3D
+import pickle
 
 '''
 well_info: Well, X, Y, Total Resources
@@ -15,8 +16,6 @@ for sensor_data in sensor_data_list:
     
     
 def compose_krige3D(name: str, sample_frac: float, variogram: str):
-    from pykrige.ok3d import OrdinaryKriging3D
-
     # Make kriging interpolation for Porosity  individually
     data_frames = []
     for i, df in enumerate(sensor_data_list):
@@ -25,9 +24,8 @@ def compose_krige3D(name: str, sample_frac: float, variogram: str):
         df['Well'] = well_info.loc[i, 'Well']
         df['Total Resources'] = well_info.loc[i, 'Total Resources']
         data_frames.append(df)
-
+        
     combined_data = pd.concat(data_frames, ignore_index=True)
-
     sampled_data = combined_data.sample(frac=sample_frac, random_state=1)  # random_state for reproducibility
 
     X = sampled_data['X'].values
@@ -48,12 +46,10 @@ def compose_krige3D(name: str, sample_frac: float, variogram: str):
     
     return ok3d
 
-from pickle import dump
-
 ok3d_poro = compose_krige3D("Porosity", 0.3, 'hole-effect')
 with open('models/ok3d_poro.pkl', 'wb') as file:
-    dump(ok3d_poro, file)
+    pickle.dump(ok3d_poro, file)
     
 ok3d_hydr = compose_krige3D("Hydrate Saturation", 0.3, 'hole-effect')
 with open('models/ok3d_hydr.pkl', 'wb') as file:
-    dump(ok3d_hydr, file)
+    pickle.dump(ok3d_hydr, file)
