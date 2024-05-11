@@ -17,11 +17,6 @@ def load_and_preprocess() -> tuple[pd.DataFrame, list[pd.DataFrame]]:
     sensor_data_list = [pd.read_csv(os.path.join(sensor_data_path, file), sep='\t',
                                     na_values="-9999") for file in sensor_data_files]
 
-    # Remove the data point with NaN value
-    well_info = well_info.dropna()
-    for sensor_data in sensor_data_list:
-        sensor_data.dropna(inplace=True)
-
     # Reset the index of the well_loc DataFrame to Well, X, Y
     well_info.rename(columns={'井': 'Well'}, inplace=True)
 
@@ -30,14 +25,24 @@ def load_and_preprocess() -> tuple[pd.DataFrame, list[pd.DataFrame]]:
         sensor_data_list[idx].columns = ['Depth', 'Porosity', 'Hydrate Saturation']
 
 
-    from sklearn.preprocessing import MinMaxScaler
+    # # Absolute the values of Porosity and Hydrate Saturation
+    # for idx, sensor_data in enumerate(sensor_data_list):
+    #     sensor_data['Porosity'] = sensor_data['Porosity'].abs()
+    #     sensor_data['Hydrate Saturation'] = sensor_data['Hydrate Saturation'].abs()
 
-    # Normalize the sensor data
-    scaler = MinMaxScaler()
+    # Drop the rows containing values larger than 1.0 except for the Depth column
     for idx, sensor_data in enumerate(sensor_data_list):
-        sensor_data[['Porosity', 'Hydrate Saturation']] = scaler.fit_transform(sensor_data[['Porosity', 'Hydrate Saturation']])
+        sensor_data = sensor_data[sensor_data['Porosity'] <= 1.0]
+        sensor_data = sensor_data[sensor_data['Hydrate Saturation'] <= 1.0]
+        sensor_data_list[idx] = sensor_data
         
+    # Drop the rows containing values smaller than 0.0 except for the Depth column
+    for idx, sensor_data in enumerate(sensor_data_list):
+        sensor_data = sensor_data[sensor_data['Porosity'] >= 0]
+        sensor_data = sensor_data[sensor_data['Hydrate Saturation'] >= 0]
+        sensor_data_list[idx] = sensor_data
         
+
     def estimate_resource(sensor_data: pd.Series) -> float:
         """Estimate the resource at a given location based on sensor data"""
         # Get the Porosity and the Hydrate saturation
@@ -53,7 +58,7 @@ def load_and_preprocess() -> tuple[pd.DataFrame, list[pd.DataFrame]]:
 
     # Calculate the resource estimate for each sensor data in each depth
     for idx, sensor_data in enumerate(sensor_data_list):
-        sensor_data_list[idx]['Estimated Resources'] = sensor_data.apply(estimate_resource, axis=1)
+        sensor_data_list[idx]['Estimated Resources'] = sensor_data.dropna().apply(estimate_resource, axis=1)
 
     sensor_data_list[0]
 
