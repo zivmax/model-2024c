@@ -306,6 +306,49 @@
 
 \subsubsection{二维 Kriging 插值模型的求解}
 
+\begin{enumerate}
+  \item \textbf{实验半方差图结果分析} \\
+        如图 \ref{fig:KrigingSemivariogram} 所示，实验半方差图显示了理论模型（黑色曲线）与实际观测数据点（红色星号）的对比。主要观察结果包括：
+        \begin{itemize}
+          \item 实际数据点大体上遵循理论模型的趋势，表明所选的球形变异函数模型是合适的。
+          \item 在较小的空间距离 \( h \) 上，数据点与理论曲线较为接近，说明在小范围内，空间自相关性较强。
+          \item 随着 \( h \) 的增加，实际数据点的分布开始波动，可能反映了在较大距离上空间自相关性的减弱。
+        \end{itemize}
+
+        % Insert pics
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.5\textwidth]{figures/task4/task4-1.png}
+          \caption{实验半方差图结果}
+          \label{fig:KrigingSemivariogram}
+        \end{figure}
+
+
+  \item \textbf{预测误方差与插值结果分析} \\
+        第二张图片（图 \ref{fig:KrigingInterpolation}）展示了 Kriging 预测的方差（左图）和资源量的插值结果（右图）。分析如下：
+        \begin{itemize}
+          \item \textbf{预测误方差图（左图）}：
+                \begin{itemize}
+                  \item 显示了各个位置的预测误差大小，颜色越亮（趋向黄色）表示预测的不确定性越大。
+                  \item 在已知数据点附近，预测误差较小，显示模型在数据点附近具有较高的信度。
+                  \item 数据点间的区域预测误差增大，反映了这些区域内插值的不确定性较高。
+                \end{itemize}
+          \item \textbf{资源量插值结果图（右图）}：
+                \begin{itemize}
+                  \item 此图显示了整个区域的资源量预测分布。颜色越亮（趋向黄色）表示预测的资源量越高。
+                  \item 资源量的高值区主要集中在某些特定区域，可能与原始数据点的分布和地质特性有关。
+                  \item 插值结果显示了资源分布的空间变异性，有助于理解资源在研究区域内的分布特征。
+                \end{itemize}
+        \end{itemize}
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.8\textwidth]{figures/task4/task4-2.png}
+          \caption{预测误方差（左）和 插值结果（右）}
+          \label{fig:KrigingInterpolation}
+        \end{figure}
+\end{enumerate}
+
+
 
 \subsubsection{粒子群优化算法的数学模型}
 粒子群优化（PSO）是一种基于群体的优化技术，模拟鸟群的社会行为来寻找问题的最优解。每个粒子代表潜在的解决方案，在解空间中按照简单的数学规则移动。
