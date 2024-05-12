@@ -515,69 +515,8 @@
 \section{模型的改进}
 
 \subsection{模型一的改进}
-针对问题二中的模型一，在具体求解大型车对车辆通行能力的修正系数时，
-我们利用交通量的测算值对照得到相应的大型车修正系数．但是，在实际操作中
-交通量的测定有很大的难度，如果此时交通量数据无法得到，那么我们便不能得
-到相应的修正系数，因此我们对模型进行改进．
-
-由~GREENSHIELD K-V 线性模型，可得通行能力的公式：
-\begin{align}
-  A_{p}=\begin{cases}
-          \dfrac{3600}{t}\left(1-\dfrac{3.6 l}{V_{t} t}\right)\left(V_{f}>7.2 l / t\right) \\
-          \dfrac{250 V_{f}}{t}\left(V_{f} \leq 7.2 l / t\right)
-        \end{cases}
-\end{align}
-
-对应的临界车辆速度:
-\begin{align}
-  V_{p}=\begin{cases}
-          \dfrac{V_{f}-3.6 l}{t} & \left(V_{f}>7.2 l / t\right)      \\
-          \dfrac{1}{2} V_{f}     & \left(V_{f} \leq 7.2 l / t\right)
-        \end{cases}
-\end{align}
-
-由美国道路通行能力准则可得，美国将道路服务水平分为六级：A-F 级，而
-我国目前针对当前国情，将道路服务水平分成四级：一级相当于美国的A、B 两
-级；二级相当于美国的C 级；三级相当于美国的D 级；四级相当于美国的E、F
-级。因此，相应的，将美国服务水平划分标准进行针对性修正，得到中国道路服
-务水平划分标准，见表
-
-\begin{table*}[h!]
-  \centering
-  \small
-  \tabcolsep 2pt
-  \caption{我国服务水平划分标准}
-  \begin{tabular*}{0.87\linewidth}{p{60pt}<{\centering}p{40pt}<{\centering}
-    p{40pt}<{\centering}p{40pt}<{\centering}p{40pt}<{\centering}
-    p{80pt}<{\centering}p{40pt}<{\centering}}
-    \toprule
-    服务水平 (L0S)  & \multicolumn{2}{c} {一级 } & 二级  & 三级  & \multicolumn{2}{c} {四级 } \\
-    \cline{2-3}\cline{6-7}
-    服务交通量  & 800 & 1200 & 1800 & 2500 & $A_{D}$ & $\leqslant A_{P}$ \\
-    速度  km / h & 120 & 120 & 120 & 120 & $\geqslant V_{p}$ & $\leqslant V_{p}$ \\
-    V / C & 0.33 & 0.48 & 0.71 & 1.0 & $A_{p} / A_{\max}\leqslant 1.0$ & -(无意义 ) \\
-    \bottomrule
-  \end{tabular*}
-\end{table*}
-
-由于车流量的测算相对于交通量来说较易得到，我们便可以不用对交通量进
-行测算，可以通过车流量与通行能力的比值计算出~V/C 饱和度值，再通过该值对
-照我国服务水平划分标准，间接得到服务交通量，从而得到大型车对通行能力的
-修正系数．
-
-
 \subsection{模型二的改进}
-
-针对于问题三中的模型，在得出各个类型小区在开放后对于整个小区周边路
-网交通负荷影响度后，无法判别小区开放的效果是积极的还是消极的，由此我们
-可以采用~Bress 悖论的原理进行判别：在个人独立选择路径的情况下，为某路网
-增加额外的通行能力（如增加路段的等），反而会导致整个路网的整体运行水平
-降低的情况．
-
-将路网进行简化如图~15：
-
-根据推导可得： 当 $\beta_{3}/\left(\beta_{1}+\beta_{2}\right) \leq\left(\beta_{5}+\beta_{6}\right)/\beta_{4}$ 时，会发生悖论，即道路的开
-通反而会加剧原有道路的交通状况．
+\subsection{模型三的改进}
 
 
 
