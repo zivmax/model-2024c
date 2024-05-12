@@ -58,7 +58,8 @@
 
 \usepackage[font=small,labelfont={bf,sf},tableposition=top]{caption}
 
-
+% 我们团队自己的定制化操作
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
 % 修改 section
 \renewcommand\section{\@startsection{section}{1}{0pt}%
@@ -77,7 +78,9 @@
   {\normalfont\large\bfseries}}
 \makeatother
 
-
+\usepackage[backend=biber,style=chinese-css,gbfootbib=true,gbfnperpage=true]{biblatex}
+\addbibresource[location=local]{references.bib} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 \begin{abstract}
@@ -360,10 +363,10 @@
   \item \textbf{速度和位置更新} \\
         粒子的速度和位置通过以下公式更新：
         \[
-        \mathbf{v}_i^{(t+1)} = w \mathbf{v}_i^{(t)} + c_1 r_1 (\mathbf{p}_{\text{best},i} - \mathbf{x}_i^{(t)}) + c_2 r_2 (\mathbf{g}_{\text{best}} - \mathbf{x}_i^{(t)})
+          \mathbf{v}_i^{(t+1)} = w \mathbf{v}_i^{(t)} + c_1 r_1 (\mathbf{p}_{\text{best},i} - \mathbf{x}_i^{(t)}) + c_2 r_2 (\mathbf{g}_{\text{best}} - \mathbf{x}_i^{(t)})
         \]
         \[
-        \mathbf{x}_i^{(t+1)} = \mathbf{x}_i^{(t)} + \mathbf{v}_i^{(t+1)}
+          \mathbf{x}_i^{(t+1)} = \mathbf{x}_i^{(t)} + \mathbf{v}_i^{(t+1)}
         \]
         其中，$w$是惯性权重，控制粒子速度的保留程度；$c_1$和$c_2$是学习因子，通常称为认知和社会参数；$r_1$和$r_2$是[0,1]区间内的随机数，代表随机性；$\mathbf{g}_{\text{best}}$是全局最优位置，即所有粒子历史上遇到的最优位置。
 
@@ -380,13 +383,13 @@
 
 \subsubsection{基于 Kriging 插值的优化模型建立}
 
-在 Kriging 模型的基础上，我们进一步建立了一个优化模型，旨在确定新井的最佳位置，以最大化资源的总探测量和井点之间的距离。模型的目标函数综合考虑了新井之间以及新旧井之间的最小距离和新井位置的预测资源总量。
+在 Kriging 模型的求解结果和粒子群优化算法的基础上，我们进一步建立了一个优化模型，旨在确定新井的最佳位置，以最大化资源的总探测量和井点之间的距离。模型的目标函数综合考虑了新井之间以及新旧井之间的最小距离和新井位置的预测资源总量。
 
 \begin{enumerate}
   \item \textbf{目标函数定义} \\
         设计目标函数如下，用于评估新井布置的质量：
         \[
-        J(x) = -\left(\min(\text{dist}(x_i, x_j)) + \sum_{k=1}^{n} Z(x_k, y_k)\right)
+          J(x) = -\left(\min(\text{dist}(x_i, x_j)) + \sum_{k=1}^{n} Z(x_k, y_k)\right)
         \]
         其中，$n$ 为新井的数量，$x = \{(x_1, y_1), (x_2, y_2), \ldots, (x_{n}, y_{n})\}$ 表示新井的位置，$\text{dist}(x_i, x_j)$ 表示所有井点（包括现有和新井）之间的欧氏距离矩阵，$Z(x_k, y_k)$ 是在位置 $(x_k, y_k)$ 的预测资源量，通过 Kriging 插值得到。
 
@@ -402,6 +405,9 @@
   \item \textbf{优化执行} \\
         优化过程包括初始化一定数量的粒子，每个粒子代表一组新井的位置。通过迭代，每个粒子根据其自身经验和群体经验更新位置，直到达到最大迭代次数或满足其他终止条件。最终，算法输出最优的新井位置和相应的目标函数值。
 \end{enumerate}
+
+\subsubsection{优化模型的求解}
+
 
 
 \section{模型的评价与推广 模型的评价与推广}
