@@ -25,6 +25,6 @@ def convert_ipynb_to_pdf(source_folder, output_folder):
 
 # Specify the source folder and output folder
 source_folder = 'code/'
-output_folder = 'code-pdf/'
+output_folder = 'paper/code/'
 
 convert_ipynb_to_pdf(source_folder, output_folder)

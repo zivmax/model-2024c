@@ -83,6 +83,10 @@
 
 \usepackage{float} % 图表浮动控制
 \usepackage{subcaption}
+\usepackage[utf8]{inputenc}
+\usepackage{pdfpages}
+\usepackage{color}
+\usepackage{listings}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -254,16 +258,16 @@
   \item \textbf{查看 RAW 数据} \\
         我们首先查看了附件一和附件二中的原始数据，发现附件一数据中存在大量的缺失值（数值为$-9999$），而附件二中的数据则相对完整。
         并且我们注意到附件一中的一些非缺失数据点的的含水合物饱和度存在负值，这是明显不符合其物理意义的，也因此我们做出了这些异常数据点系仪器故障的假设。
-  \item \textbf{读取数据}
+  \item \textbf{读取数据} \\
         使用 Pandas 软件包进行数据读取，将数据存储为 DataFrame 格式，使用空值替代了缺失值的位置，方便后续的数据处理和分析。
-  \item \textbf{基本可视化}
+  \item \textbf{基本可视化} \\
         我们对数据进行了基本的可视化分析，尤其关注了孔隙度和含水合物饱和度的负值情况。我们发现数据集中的孔隙度不存在数值，而在含水合物饱和度中存在负值的情况相对较多。
         \begin{figure}[H]
           \centering
           \includegraphics[width=0.7\textwidth]{figures/eda/1.png}
           \caption{含水合物饱和度（左）含孔隙度（右）在数据集中的负值情况}
         \end{figure}
-  \item \textbf{数据清洗}
+  \item \textbf{数据清洗} \\
         尽管常见的Min-Max标准化方法能够有效消除负值，但同时也导致了数据的失真。标准化后的数据丧失了原有的地质学意义，放弃采用。
         因此最后对原始数据集中所有孔隙度和含水合物饱和度数值不在$[0, 1]$范围内的数据点进行了剔除。
 
@@ -521,7 +525,7 @@ KDE 在数据可视化、密度估计、异常检测等领域都有广泛的应�
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/task2/task2-4.png}
+  \includegraphics[width=0.7\textwidth]{figures/task2/task2-4.png}
   \caption{有效厚度的变化规律图}
   \label{fig:valid-thick-}
 \end{figure}
@@ -644,7 +648,7 @@ Kriging 插值是一种插值和空间预测技术，常用于地理空间数据
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/task3/task3-1.png}
+  \includegraphics[width=0.45\textwidth]{figures/task3/task3-1.png}
   \caption{资源量的概率分布图}
 \end{figure}
 
@@ -705,6 +709,8 @@ Kriging 插值是一种插值和空间预测技术，常用于地理空间数据
         最后，使用解得的权重系数 $\lambda_i$ 和模型参数，我们可以计算任意位置 $x$ 的资源量预测值 $Z(x)$。这一过程涉及到在整个研究区域内创建一个平面网格，并在每个网格点上应用上述Kriging公式进行资源量预测。
 \end{enumerate}
 
+\pagebreak
+
 \subsubsection{二维 Kriging 插值模型的求解}
 
 \begin{enumerate}
@@ -712,7 +718,7 @@ Kriging 插值是一种插值和空间预测技术，常用于地理空间数据
         % Insert pics
         \begin{figure}[H]
           \centering
-          \includegraphics[width=0.4\textwidth]{figures/task4/task4-1.png}
+          \includegraphics[width=0.3\textwidth]{figures/task4/task4-1.png}
           \caption{实验半方差图结果}
           \label{fig:KrigingSemivariogram}
         \end{figure}
@@ -853,19 +859,19 @@ Kriging 插值是一种插值和空间预测技术，常用于地理空间数据
 \subsection{模型的评价}
 \subsubsection{模型的优点}
 \begin{enumerate}
-  \item 模型采用了较为简便和现存的方法，尽可能利用简单的概率函数来表达，减少大的计算量。模型基于一系列合理的假设。比如观测期内储层参数保持稳定是十分重要的，否则数据将不再具有基于水平维度同时研究的价值。研究区域内的地质结构相对均质也是十分重要的，具有天然气特性的物质需要被排除防止混淆。模型的实现预备了较好的环境条件。
-  \item 在建立模型之前进行了较多的数据预处理操作，包括格式标准化、异常值剔除等，使得模型使用的数据纯净度和准确度较高，提高模型的准确性和可靠性，使结果更合理，避免数据本身带来的较大误差。
-  \item 明确的建模目标：模型针对天然气水合物资源量的估计，明确了资源分布范围、资源参数的概率分布及其变化规律、资源量的概率分布估计以及增钻井位策略等具体问题，使研究目标具体化、清晰化。
-  \item 本研究将多种数学模型结合，如高斯混合模型（GMM）、正态分布拟合、核密度估计（KDE）和克里金插值（Kriging），这些模型从不同角度对数据进行分析，增加了结果的全面性和深度。
+  \item \textbf{简洁性与计算效率：}本模型采用简便且成熟的方法论，通过简化的概率函数进行表达，有效减少计算量。此外，模型构建基于一系列合理的假设，例如，假设观测期内储层参数稳定，这对于保持数据在水平维度上的研究价值至关重要。此外，假设研究区域内的地质结构相对均质，并排除具有天然气特性的干扰物质，为模型提供了良好的环境条件。
+  \item \textbf{数据预处理与质量控制：}在模型建立之前，进行了广泛的数据预处理工作，包括数据格式的标准化和异常值的剔除，这些步骤显著提高了数据的纯净度和准确性，从而增强了模型的准确性和可靠性，确保了结果的合理性，减少了数据本身可能引入的误差。
+  \item \textbf{明确的建模目标：}模型针对天然气水合物资源量进行估计，明确界定了资源分布范围、资源参数的概率分布及其变化规律、资源量的概率分布估计以及增钻井位策略等关键问题，使得研究目标具体化且清晰。
+  \item \textbf{综合多种数学模型：}本研究结合了多种数学模型，包括高斯混合模型（GMM）、正态分布拟合、核密度估计（KDE）和克里金插值（Kriging）。这些模型从不同的角度分析数据，增加了结果的全面性和深度。
 \end{enumerate}
 
 \subsubsection{模型的缺点}
 \begin{enumerate}
-  \item 模型假设与现实差异：本研究中所建立的模型基于一系列关键假设，包括对地壳稳定性和参数均一性的考虑，但现实世界的地质情况远比模型所能涵盖的要复杂得多。模型仅仅在特定条件下的理论上是健全的，但可能无法始终准确预测所有现实世界条件下的地质现象。具有较为强烈的主观性。
-  \item 模型参数的局限性：鉴于题目所提供的条件和指导，我们的模型在构建时未能纳入所有可能影响结果的参数。模型中的参数没有进行全面的自相关和共线性分析，这可能会影响到模型的预测能力。未来的研究可以引入更广泛的参数集和更详细的分析，有较大的不确定性。
-  \item 误差与数据量的讨论：
-        预测精度受到了数据量不足的限制，导致了较多的误差。我们默认数据中的潜在误差不存在。数据的预处理可以更加精确。
+  \item \textbf{模型与现实的假设差异：}尽管本研究基于地壳稳定性和参数均一性等关键假设建立模型，但现实中的地质情况远比模型所能涵盖的更为复杂。因此，模型在特定条件下理论上是合理的，但可能无法始终准确预测所有现实世界条件下的地质现象，存在一定的主观性。
+  \item \textbf{模型参数的局限性：}由于研究条件和指导的限制，模型在构建时未能包含所有可能影响结果的参数。模型中的参数缺乏全面的自相关性和共线性分析，这可能影响模型的预测能力。未来研究可以通过引入更广泛的参数集和更详尽的分析来弥补这一点。
+  \item \textbf{误差分析与数据量限制：}模型的预测精度受限于可用数据量，导致较大的误差。尽管进行了数据预处理，但仍可进一步精细化以确保潜在误差的最小化。
 \end{enumerate}
+
 
 
 \subsection{模型的推广}
@@ -905,9 +911,24 @@ Kriging 插值是一种高级的地统计学方法，用于预测空间数据的
 \printbibliography
 
 \newpage
-
 \begin{appendices}
+  \section*{纯 Python 代码部分}
 
+  \textbf{\textcolor[rgb]{0.98,0.00,0.00}{程序一：加载数据和预处理}}
+  \lstinputlisting[language=python]{code/loadAndPreprocess.py}
+  \textbf{\textcolor[rgb]{0.98,0.00,0.00}{程序二：拟合三维 Kriging 插值模型}}
+  \lstinputlisting[language=python]{code/kriging3D-train.py}
+  \textbf{\textcolor[rgb]{0.98,0.00,0.00}{程序三：使用三维 Kriging 模型进行预测}}
+  \lstinputlisting[language=python]{code/kriging3D-predict.py}
+
+  \section*{Jupyter Note Book（Plotly 输出不可读）}
+  \includepdf[pages=-, scale=0.8, pagecommand={}]{code/jupyter/eda.pdf}
+  \includepdf[pages=-, scale=0.8, pagecommand={}]{code/jupyter/resources-vis.pdf}
+  \includepdf[pages=-, scale=0.8, pagecommand={}]{code/jupyter/distributions.pdf}
+  \includepdf[pages=-, scale=0.8, pagecommand={}]{code/jupyter/kriging3D/kriging3D.pdf}
+  \includepdf[pages=-, scale=0.8, pagecommand={}]{code/jupyter/kriging3D/semivarience.pdf}
+  \includepdf[pages=-, scale=0.8, pagecommand={}]{code/jupyter/kriging2D.pdf}
+  \includepdf[pages=-, scale=0.8, pagecommand={}]{code/jupyter/new-wells.pdf}
 \end{appendices}
 \end{document}
 %%
