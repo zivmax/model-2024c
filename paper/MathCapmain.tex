@@ -407,26 +407,43 @@
 \end{enumerate}
 
 \subsubsection{优化模型的求解}
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.5\textwidth]{figures/task4/task4-3.png}
-  \caption{新井位置优化结果}
-  \label{fig:NewWellsAndOldWells}
-\end{figure}
+在本节中，我们将详细分析基于Kriging插值和粒子群优化算法（PSO）建立的优化模型的求解结果。该模型的目标是确定新井的最佳位置，以最大化资源的探测量并优化井点之间的距离。
+\begin{enumerate}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/task4/task4-4.png}
-  \caption{新井位置资源量情况}
-  \label{fig:NewWellsAndResource}
-\end{figure}
+  \item \textbf{新井位置优化结果}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/task4/task4-5.png}
-  \caption{添加新井前后，所有井距离的离散程度}
-  \label{fig:NewWellsAndNoNewWells}
-\end{figure}
+        首先，我们从新井的布局开始。如图 \ref{fig:NewWellsAndOldWells} 所示，新井（红色点）与现有井（蓝色点）的布局展示了新井的选址策略不仅考虑了资源量的最大化，同时也确保了合理的空间分布，避免过于集中或偏远。
+
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.5\textwidth]{figures/task4/task4-3.png}
+          \caption{新井位置优化结果}
+          \label{fig:NewWellsAndOldWells}
+        \end{figure}
+
+  \item \textbf{资源量和不确定性分析}
+
+        接下来，我们通过Kriging插值的结果来分析资源量分布和不确定性。如图 \ref{fig:NewWellsAndResource} 右侧所示，Kriging插值的资源分布图显示了预测的资源量，其中颜色越暗表示资源量越高。这帮助我们验证新井位置的选择是否位于资源丰富的区域。左侧的Kriging方差图表则提供了关于预测不确定性的信息，颜色越亮表示不确定性越高，这通常出现在样本点较少的区域。
+
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.8\textwidth]{figures/task4/task4-4.png}
+          \caption{新井位置资源量情况}
+          \label{fig:NewWellsAndResource}
+        \end{figure}
+
+  \item \textbf{井点距离的离散程度分析}
+
+        最后，我们分析了添加新井前后所有井点距离的离散程度。如图 \ref{fig:NewWellsAndNoNewWells} 所示，通过箱型图和小提琴图可以看出，引入新井后，井点之间的距离的中位数有所降低，这表明新井的加入使得井点分布更加均匀。小提琴图进一步揭示了数据分布的密度和范围，展示了新井引入前后井点距离分布的变化。
+
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.8\textwidth]{figures/task4/task4-5.png}
+          \caption{添加新井前后，所有井距离的离散程度}
+          \label{fig:NewWellsAndNoNewWells}
+        \end{figure}
+\end{enumerate}
+
 
 \section{模型的评价与推广 模型的评价与推广}
 
