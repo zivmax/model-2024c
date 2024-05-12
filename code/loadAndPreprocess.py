@@ -49,7 +49,7 @@ def load_and_preprocess() -> tuple[pd.DataFrame, list[pd.DataFrame]]:
         porosity = sensor_data['Porosity']
         hydrate_saturation = sensor_data['Hydrate Saturation']
 
-        valid_volume = 1 # Assume the valid volume is 1 cubic meter
+        valid_volume = 0.1 # Assume the valid volume is 1 cubic meter
         factor = 155 # Assume the factor is 155
 
         # Calculate the resource estimate
