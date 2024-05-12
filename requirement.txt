@@ -9,3 +9,5 @@ nbformat
 jupyterlab
 seaborn
 pyswarms
+nbconvert
+notebook
