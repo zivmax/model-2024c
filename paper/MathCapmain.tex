@@ -204,6 +204,10 @@
   \item \wordc{混合高斯模型（GMM：Gaussian Mixture Model）：}
         是一种统计模型，用于表示具有多个高斯分布组成的复杂概率分布。每个高斯分布称为一个组件，每个组件有自己的均值和方差，并且每个组件都有一个权重表示该组件在总分布中的比例。
         GMM常用于聚类分析和密度估计，尤其在数据呈多模态分布时效果较好。
+  \item \wordc{实验半方差图（Experimental variogram）：}
+        实验半方差图，在地质统计学中被广泛使用，尤其是在空间数据分析和地球科学领域。
+        它是一种描述空间数据中变量在不同距离上的空间相关性的工具。
+        实验半方差图通过计算数据点对之间的半方差来揭示数据的空间结构，从而帮助研究者理解变量在空间上是如何变化的。
 \end{enumerate}
 
 
@@ -278,7 +282,6 @@
         因此最后对原始数据集中出现的负数值全部进行了识别和剔除。
 \end{enumerate}
 
-
 \subsection{问题1的分析和求解}
 \subsubsection{问题1模型的建立}
 我们需要解决的问题是根据附件中勘探井位信息，
@@ -292,39 +295,49 @@
   Q = A \times Z \times \phi \times S \times E
 \end{equation}
 其中，$Q$ 为天然气水合物资源量，$A$ 为面积，$Z$ 为有效厚度，$\phi$ 为孔隙度，$S$ 为水合物饱和度，$E$ 为产气量因子。
+我们假设$E$恒为$155$。而对于堪探井的每一个数据点，我们假设了它是$1$个单位面积和$0.1$单位厚度的体积内的平均情况。
+
+因此对于任意一个数据点($x_i, y_i, z_i, \phi_i, S_i$)，我们可以估算天然气水合物资源量$Q_i$：
+\[
+  Q_i = 1 \times 0.1 \times \phi_i \times S_i \times 155
+\]
 
 
-\subsubsection{问题2模型的求解}
-将预处理数据带入上述资源量与储层参数的线性关系，计算出天然气水合物资源量Q，通过可视化处理得到天然气水合物资源的三维深度和资源量总分布图，以及各井口内部天然气水合物资源深度与资源量的对应关系。
+\subsubsection{问题1模型的求解}
+利用预处理过后的数据，我们可以利用 Pandas、NumPy 等 Python 软件包计算每个数据点的天然气水合物资源量。
 
-%????
+得到每个数据点的天然气水合物资源量后，我们以如下表达式计算了每一个井位中的天然气水合物资源总量：
+\begin{equation}
+  Q_j = \sum_{i=1}^{n} Q_i, \quad \text{其中} \quad (x_i, y_i) \in \text{井位} j
+\end{equation}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.5\textwidth]{figures/task1/task1-1.png}
-  \caption{天然气水合物资源的三维深度和资源量总分布}
-  \label{fig:3PRDD}
-\end{figure}
+在得到估计的天然气水合物资源量后，我们利用 Plotly 软件包从三个角度进行了可视化分析，以帮助我们了解资源的分布情况：
 
-\begin{figure}[h!t]
-  \centerline{\includegraphics[scale=1]{figures/task1/task1-2.png}}
-  \caption{\song\wuhao 各井口内资源深度与资源量对应关系}
-\end{figure}
+\begin{enumerate}
+  \item \textbf{天然气水合物资源的三维分布情况}\\
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.5\textwidth]{figures/task1/task1-1.png}
+          \caption{天然气水合物资源的三维散点图}
+        \end{figure}
+  \item \textbf{天然气水合物资源对于勘探井在深度上的分布情况}\\
+        \begin{figure}[h]
+          \includegraphics[width=0.5\textwidth]{figures/task1/task1-2.png}
+          \caption{各井内深度与资源量的折线图}
+        \end{figure}
+  \item \textbf{二维平面上天然气水合物资源的分布情况}
+        \begin{figure}[h]
+          \includegraphics[width=0.5\textwidth]{figures/task1/task1-3.png}
+          \caption{二维平面上天然气水合物资源的散点图}
+        \end{figure}
 
-\begin{figure}[h!t]
-  \centerline{\includegraphics[scale=1]{figures/task1/task1-3.png}}
-  \caption{\song\wuhao 井间资源分配}
-\end{figure}
-
-
-\subsubsection{问题2结果}
-
+\end{enumerate}
 
 \subsection{问题2模型的建立和求解}
 针对问题2的模型，我们首先对三个不同指标的数据进行了预处理。对于有效厚度，我们逐一分析了14口井的数据，并剔除了不需要的点，得到每口井的有效厚度列表。随后，我们将这些数据整合，并利用正态概率分布进行拟合，得到了相应的模型。对于地层孔隙度和饱和度，我们同样采用了正态概率分布进行拟合，并获得了拟合后的图像。
 进一步地，我们利用14口井的所有数据，结合井的XY坐标和深度H构建了一个三维立体数据。在剔除了无用的点后，我们应用了三维Kriging插值模型进行随机拟合，得到了相应的立体图像。这一方法有助于我们理解勘探区域的变化规律，并为进一步的研究提供了重要参考。
 
-\subsubsection{Gaussian Mixture Model}
+\subsubsection{高斯混合模型（GMM：Gaussian Mixture Model）}
 高斯混合模型（Gaussian Mixture Model，GMM）是一种用于建模概率分布的统计模型。它由多个高斯分布组成，每个高斯分布代表了数据中的一个聚类。换句话说，GMM 假设数据是由多个高斯分布组成的混合物生成的，每个高斯分布对应于数据中的一个聚类或者一个潜在的生成过程。
 GMM 是一种非监督学习算法，通常用于聚类分析，即将数据集划分为具有相似特征的子集。它也可以用于密度估计和异常检测。
 在 GMM 中，每个高斯分布由其均值、协方差矩阵和权重参数表示。模型的目标是通过最大化似然函数或通过 EM 算法来估计这些参数，从而找到最佳的混合组合来解释数据。
@@ -370,7 +383,6 @@ GMM 是一种非监督学习算法，通常用于聚类分析，即将数据集�
           \centering
           \includegraphics[width=0.8\textwidth]{figures/task2/task2-1.png}
           \caption{有效厚度的高斯混合模型}
-          \label{fig:NewWellsAndResource}
         \end{figure}
 
         在这种情况下，通过调试参数，我们发现选择 3 个高斯分布来拟合数据效果最好，即模型在三个成分时达到了最佳的拟合效果，或者说能够最好地解释数据的分布特征。这通常表明有效厚度数据中存在三个明显的聚类或者生成机制。
@@ -504,7 +516,7 @@ KDE 在数据可视化、密度估计、异常检测等领域都有广泛的应�
   \centering
   \includegraphics[width=0.8\textwidth]{figures/task2/task2-4.png}
   \caption{有效厚度的变化规律图}
-  \label{fig:NewWellsAndResource}
+  \label{fig:valid-thick-}
 \end{figure}
 
 \subsubsection{空间三维的Kriging模型}
@@ -682,7 +694,7 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
         \[
           Q_{\text{total}} = \sum_{k=1}^{n} Q_k
         \]。
-        最终的到 50355145428.42452 的结果，这与问题三中利用孔隙度和饱和度三维 Kringing 插值结果求出的资源总量 44417499906.32 误差仅约为 10\%，间接验证了模型的准确性。
+        最终的到 $50355145428.42452$ 的结果，这与问题三中利用孔隙度和饱和度的三维 Kringing 插值结果求出的资源总量 $44417499906.32$ 误差仅约为 10\%，间接验证了模型的准确性。
 
 \end{enumerate}
 
