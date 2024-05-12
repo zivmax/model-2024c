@@ -80,6 +80,8 @@
 
 \usepackage[backend=biber,style=gb7714-2015,gbfieldtype=true]{biblatex}
 \addbibresource[location=local]{references.bib} 
+
+\usepackage{float} % 图表浮动控制
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -192,7 +194,7 @@
   \item \wordc{水合物饱和度：}
         单位体积大矿物质中水合物所占的体积分数。
   \item \wordc{产气量因子：}
-         1 立方米天然气水合物能量相当于多少立方
+        1 立方米天然气水合物能量相当于多少立方
         米的天然气的热值。
   \item \wordc{粒子群优化算法（PSO）：}
         是一种基于群体智能的优化工具，通过模拟鸟群的社会行为来寻找问题的最优解。
@@ -265,15 +267,15 @@
 \begin{enumerate}
   \item \textbf{查看 RAW 数据} \\
         我们首先查看了附件一和附件二中的原始数据，发现附件一数据中存在大量的缺失值（数值为$-9999$），而附件二中的数据则相对完整。
-        并且我们注意到附件一中的一些非缺失数据点的的含水饱和度存在负值，这是明显不符合其物理意义的，也因此我们做出了这些异常数据点系仪器故障的假设。
+        并且我们注意到附件一中的一些非缺失数据点的的含水合物饱和度存在负值，这是明显不符合其物理意义的，也因此我们做出了这些异常数据点系仪器故障的假设。
   \item \textbf{读取数据}
         使用 Pandas 软件包进行数据读取，将数据存储为 DataFrame 格式，使用空值替代了缺失值的位置，方便后续的数据处理和分析。
   \item \textbf{基本可视化}
-        我们对数据进行了基本的可视化分析，尤其关注了孔隙度和含水饱和度的负值情况。我们发现数据集中的孔隙度不存在数值，而在含水饱和度中存在负值的情况相对较多。
-        \begin{figure}[h]
+        我们对数据进行了基本的可视化分析，尤其关注了孔隙度和含水合物饱和度的负值情况。我们发现数据集中的孔隙度不存在数值，而在含水合物饱和度中存在负值的情况相对较多。
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.7\textwidth]{figures/eda/1.png}
-          \caption{含水饱和度在数据集中的负值情况}
+          \caption{含水合物饱和度在数据集中的负值情况}
         \end{figure}
   \item \textbf{数据清洗}
         尽管常见的Min-Max标准化方法能够有效消除负值，但同时也导致了数据的失真。标准化后的数据丧失了原有的地质学意义，放弃采用。
@@ -289,9 +291,9 @@
 基于成藏思路的方法从本质上来讲是体积法，
 体积法能反映资源的实际状态，便于指导实际开发选址，因此是体积法最常用的水合物资源量估计方法。
 其数学表达如下：
-\begin{equation}
+\[
   Q = A \times Z \times \phi \times S \times E
-\end{equation}
+\]
 其中，$Q$ 为天然气水合物资源量，$A$ 为面积，$Z$ 为有效厚度，$\phi$ 为孔隙度，$S$ 为水合物饱和度，$E$ 为产气量因子。
 我们假设$E$恒为$155$。而对于堪探井的每一个数据点，我们假设了它是$1$个单位面积和$0.1$单位厚度的体积内的平均情况。
 
@@ -305,27 +307,27 @@
 利用预处理过后的数据，我们可以利用 Pandas、NumPy 等 Python 软件包计算每个数据点的天然气水合物资源量。
 
 得到每个数据点的天然气水合物资源量后，我们以如下表达式计算了每一个井位中的天然气水合物资源总量：
-\begin{equation}
+\[
   Q_j = \sum_{i=1}^{n} Q_i, \quad \text{其中} \quad (x_i, y_i) \in \text{井位} j
-\end{equation}
+\]
 
 在得到估计的天然气水合物资源量后，我们利用 Plotly 软件包从三个角度进行了可视化分析，以帮助我们了解资源的分布情况：
 
 \begin{enumerate}
   \item \textbf{天然气水合物资源的三维分布情况}\\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.9\textwidth]{figures/task1/task1-1.png}
           \caption{天然气水合物资源的三维散点图}
         \end{figure}
   \item \textbf{天然气水合物资源对于勘探井在深度上的分布情况}\\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.99\textwidth]{figures/task1/task1-2.png}
           \caption{各井内深度与资源量的折线图}
         \end{figure}
   \item \textbf{二维平面上天然气水合物资源的分布情况} \\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.7\textwidth]{figures/task1/task1-3.png}
           \caption{二维平面上天然气水合物资源的散点图}
@@ -335,7 +337,7 @@
 
 \subsection{问题2模型的建立和求解}
 针对问题2的模型，我们首先对三个不同指标的数据进行了预处理。对于有效厚度，我们逐一分析了14口井的数据，并剔除了不需要的点，得到每口井的有效厚度列表。随后，我们将这些数据整合，并利用正态概率分布进行拟合，得到了相应的模型。对于地层孔隙度和饱和度，我们同样采用了正态概率分布进行拟合，并获得了拟合后的图像。
-进一步地，我们利用14口井的所有数据，结合井的XY坐标和深度H构建了一个三维立体数据。在剔除了无用的点后，我们应用了三维Kriging插值模型进行随机拟合，得到了相应的立体图像。这一方法有助于我们理解勘探区域的变化规律，并为进一步的研究提供了重要参考。
+进一步地，我们利用14口井的所有数据，结合井的二维坐标$(x_j,\ y_j)$和深度$z_i$构建了一个三维立体数据。在剔除了无用的点后，我们应用了三维Kriging插值模型进行随机拟合，得到了相应的立体图像。这一方法有助于我们理解勘探区域的变化规律，并为进一步的研究提供了重要参考。
 
 \subsubsection{高斯混合模型（GMM：Gaussian Mixture Model）}
 高斯混合模型（Gaussian Mixture Model，GMM）是一种用于建模概率分布的统计模型。它由多个高斯分布组成，每个高斯分布代表了数据中的一个聚类。换句话说，GMM 假设数据是由多个高斯分布组成的混合物生成的，每个高斯分布对应于数据中的一个聚类或者一个潜在的生成过程。
@@ -353,16 +355,16 @@ GMM 是一种非监督学习算法，通常用于聚类分析，即将数据集�
         \end{itemize}
 
   \item \textbf{GMM-Likelihood函数} \\
-        \begin{equation*}
+        \[
           p(X | \theta) = \prod_{i=1}^N \left( \sum_{k=1}^K \pi_k \mathcal{N}(x_i | \mu_k, \Sigma_k) \right)
-        \end{equation*}
+        \]
         其中 \( \mathcal{N}(x | \mu, \Sigma) \) 是多维高斯分布的概率密度函数。
 
   \item \textbf{GMM-模型参数估计} \\
         E 步：计算每个数据点属于每个高斯分布的后验概率
-        \begin{equation*}
+        \[
           \gamma(z_{ik}) = \frac{\pi_k \mathcal{N}(x_i | \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \mathcal{N}(x_i | \mu_j, \Sigma_j)}
-        \end{equation*}
+        \]
 
         M 步：使用后验概率重新估计参数
         \begin{align*}
@@ -370,30 +372,30 @@ GMM 是一种非监督学习算法，通常用于聚类分析，即将数据集�
           \mu_k    & = \frac{\sum_{i=1}^N \gamma(z_{ik}) x_i}{\sum_{i=1}^N \gamma(z_{ik})}                          \\
           \Sigma_k & = \frac{\sum_{i=1}^N \gamma(z_{ik}) (x_i - \mu_k)(x_i - \mu_k)^T}{\sum_{i=1}^N \gamma(z_{ik})}
         \end{align*}
-        重复以上 E 步和 M 步直到收敛，即参数不再变化或者变化很小。
+        重复以上 $E$ 步和 $M$ 步直到收敛，即参数不再变化或者变化很小。
 \end{enumerate}
 
-\subsubsection{基于GMM进行有效厚度和含水饱和度的概率分布拟合}
+\subsubsection{基于GMM进行有效厚度和含水合物饱和度的概率分布拟合}
 \begin{enumerate}
   \item \textbf{有效厚度的数据准备和预处理} \\
         我们从已有的井的数据中提取数据，采用遍历的方式，设置起始遇到可燃冰点，和终止遇到可燃冰点，得到一口井中有多少段有可燃冰的区段，然后同样的方式对其他的井进行操作，合并所有得到的段。这些段就是所有井的有效厚度列表，这个列表将用于高斯分布拟合模型的建立。
 
   \item \textbf{有效厚度拟合曲线} \\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.8\textwidth]{figures/task2/task2-1.png}
           \caption{有效厚度的高斯混合模型}
         \end{figure}
 
         在这种情况下，通过调试参数，我们发现选择 3 个高斯分布来拟合数据效果最好，即模型在三个成分时达到了最佳的拟合效果，或者说能够最好地解释数据的分布特征。这通常表明有效厚度数据中存在三个明显的聚类或者生成机制。
-  \item \textbf{含水饱和度的数据准备和预处理} \\
+  \item \textbf{含水合物饱和度的数据准备和预处理} \\
         将14口井的饱和度的数据放到一个tsv文件中，同时对与无效的数据以及0点进行剔除，得到一个干净的数据集，用于高斯混合模型的拟合。
 
-  \item \textbf{含水饱和度的拟合曲线} \\
-        \begin{figure}[h]
+  \item \textbf{含水合物饱和度的拟合曲线} \\
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.8\textwidth]{figures/task2/task2-3.png}
-          \caption{含水饱和度的高斯混合模型}
+          \caption{含水合物饱和度的高斯混合模型}
         \end{figure}
 
         在这种情况下，我们对参数进行调试，发现同样以3个高斯分布来拟合数据效果最佳，达到了理想的拟合状态。
@@ -422,7 +424,7 @@ GMM 是一种非监督学习算法，通常用于聚类分析，即将数据集�
   \item \textbf{最大化似然函数} \\
         我们的目标是最大化对数似然函数以估计模型参数 $\mu$ 和 $\sigma^2$。这通常通过对参数求导并令导数为零来实现。
 
-        \subsubsection*{对 $\mu$ 求导}
+        对 $\mu$ 求导:
 
         \[
           \frac{\partial}{\partial \mu} \log L(\mu, \sigma^2 | X) = \sum_{i=1}^N \frac{\partial}{\partial \mu} \log f(x_i | \mu, \sigma^2)
@@ -475,7 +477,7 @@ GMM 是一种非监督学习算法，通常用于聚类分析，即将数据集�
         将14口井的地层孔隙度的数据放到一个tsv文件中，同时对与无效的数据以及0点进行剔除，得到一个干净的数据集，用于正态模型的拟合。
 
   \item \textbf{孔隙度拟合曲线} \\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[scale=0.5]{figures/task2/task2-2.png}
           \caption{孔隙度的正态分布模型}
@@ -512,7 +514,7 @@ KDE 在数据可视化、密度估计、异常检测等领域都有广泛的应�
 \subsubsection{基于KDE进行有效厚度变化规律分析}
 
 我们利用之前GMM准备好的数据采用了KDE，生成了一个二维的color mesh图。
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/task2/task2-4.png}
   \caption{有效厚度的变化规律图}
@@ -553,35 +555,35 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
 \end{enumerate}
 
 
-\subsubsection{基于Kriging进行孔隙度和含水饱和度的变化规律分析}
+\subsubsection{基于Kriging进行孔隙度和含水合物饱和度的变化规律分析}
 \begin{enumerate}
   \item \textbf{孔隙度在空间中的数值分布} \\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[scale=0.4]{figures/task2/task2-5-1.png}
-          \caption{孔隙度Kriging3D图}
+          \caption{孔隙度的Kriging插值结果}
           \label{fig:porosity-Kriging-3d}
         \end{figure}
   \item \textbf{孔隙度在空间中的数值分布误差} \\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[scale=0.4]{figures/task2/task2-5-2.png}
-          \caption{孔隙度Kriging3D误差图}
+          \caption{孔隙度Kriging预测误方差图}
           \label{fig:porosity-error-Kriging-3d}
         \end{figure}
 
-  \item \textbf{含水饱和度在空间中的数值分布} \\
-        \begin{figure}[h]
+  \item \textbf{含水合物饱和度在空间中的数值分布} \\
+        \begin{figure}[H]
           \centering
           \includegraphics[scale=0.4]{figures/task2/task2-6-1.png}
-          \caption{含水饱和度Kriging3D图}
+          \caption{含水合物饱和度的Kriging插值结果}
           \label{fig:water-saturation-Kriging-3d}
         \end{figure}
-  \item \textbf{含水饱和度在空间中的数值分布误差} \\
-        \begin{figure}[h]
+  \item \textbf{含水合物饱和度在空间中的数值分布误差} \\
+        \begin{figure}[H]
           \centering
           \includegraphics[scale=0.4]{figures/task2/task2-6-2.png}
-          \caption{含水饱和度Kriging3D误差图}
+          \caption{含水合物饱和度的Kriging预测误方差图}
           \label{fig:water-saturation-error-Kriging-3d}
         \end{figure}
 
@@ -603,11 +605,12 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
 
 对于这个建模我们可以得到表达式：
 \[
-  Q_k =
+  Q_k = A \times Z \times \phi \times S \times E
 \]
 \[
   Q_{\text{total}} = \sum_{k=1}^{n} Q_k
 \]
+
 
 \subsection{问题4模型的建立和求解}
 \subsubsection{二维 Kriging 插值模型的建立}
@@ -654,7 +657,7 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
 \begin{enumerate}
   \item \textbf{实验半方差图结果分析} \\
         % Insert pics
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.4\textwidth]{figures/task4/task4-1.png}
           \caption{实验半方差图结果}
@@ -668,7 +671,7 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
         \end{itemize}
 
   \item \textbf{预测误方差与插值结果分析} \\
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.8\textwidth]{figures/task4/task4-2.png}
           \caption{预测误方差（左）和 插值结果（右）}
@@ -759,7 +762,7 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
 
   \item \textbf{新井位置优化结果}
 
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.5\textwidth]{figures/task4/task4-3.png}
           \caption{新井位置优化结果}
@@ -770,7 +773,7 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
 
   \item \textbf{资源量和不确定性分析}
 
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.8\textwidth]{figures/task4/task4-4.png}
           \caption{新井位置资源量情况}
@@ -780,7 +783,7 @@ Kriging 是一种插值和空间预测技术，常用于地理空间数据分析
 
 
   \item \textbf{井点距离的离散程度分析}
-        \begin{figure}[h]
+        \begin{figure}[H]
           \centering
           \includegraphics[width=0.8\textwidth]{figures/task4/task4-5.png}
           \caption{添加新井前后，所有井距离的离散程度}
