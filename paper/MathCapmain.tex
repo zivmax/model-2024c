@@ -257,6 +257,261 @@
 \subsubsection{问题2结果}
 
 
+\subsection{问题2模型的建立和求解}
+针对问题2的模型，我们首先对三个不同指标的数据进行了预处理。对于有效厚度，我们逐一分析了14口井的数据，并剔除了不需要的点，得到每口井的有效厚度列表。随后，我们将这些数据整合，并利用正态概率分布进行拟合，得到了相应的模型。对于地层孔隙度和饱和度，我们同样采用了正态概率分布进行拟合，并获得了拟合后的图像。
+进一步地，我们利用14口井的所有数据，结合井的XY坐标和深度H构建了一个三维立体数据。在剔除了无用的点后，我们应用了三维kriging插值模型进行随机拟合，得到了相应的立体图像。这一方法有助于我们理解勘探区域的变化规律，并为进一步的研究提供了重要参考。
+
+\subsubsection{Gaussian Mixture Model}
+高斯混合模型（Gaussian Mixture Model，GMM）是一种用于建模概率分布的统计模型。它由多个高斯分布组成，每个高斯分布代表了数据中的一个聚类。换句话说，GMM 假设数据是由多个高斯分布组成的混合物生成的，每个高斯分布对应于数据中的一个聚类或者一个潜在的生成过程。
+GMM 是一种非监督学习算法，通常用于聚类分析，即将数据集划分为具有相似特征的子集。它也可以用于密度估计和异常检测。
+在 GMM 中，每个高斯分布由其均值、协方差矩阵和权重参数表示。模型的目标是通过最大化似然函数或通过 EM 算法来估计这些参数，从而找到最佳的混合组合来解释数据。
+
+\begin{enumerate}
+
+  \item \textbf{GMM-参数} \\
+        假设我们有一个观测数据集 $X = \{x_1, x_2, \ldots, x_N\}$，其中每个 $x_i$ 是一个 $D$ 维向量。
+        \begin{itemize}
+          \item \textbf{均值（mean）：} $\boldsymbol{\mu_k}$，表示第 $k$ 个高斯分布的均值向量，$k = 1, 2, \ldots, K$。
+          \item \textbf{协方差矩阵（covariance）：} $\boldsymbol{\Sigma_k}$，表示第 $k$ 个高斯分布的协方差矩阵，$k = 1, 2, \ldots, K$。
+          \item \textbf{混合系数（mixture coefficient）：} $\boldsymbol{\pi_k}$，表示第 $k$ 个高斯分布在整个混合模型中的权重，$\sum_{k=1}^K \pi_k = 1$。
+        \end{itemize}
+
+  \item \textbf{GMM-Likelihood函数} \\
+        \begin{equation*}
+          p(X | \theta) = \prod_{i=1}^N \left( \sum_{k=1}^K \pi_k \mathcal{N}(x_i | \mu_k, \Sigma_k) \right)
+        \end{equation*}
+        其中 \( \mathcal{N}(x | \mu, \Sigma) \) 是多维高斯分布的概率密度函数。
+
+  \item \textbf{GMM-模型参数估计} \\
+        E 步：计算每个数据点属于每个高斯分布的后验概率
+        \begin{equation*}
+          \gamma(z_{ik}) = \frac{\pi_k \mathcal{N}(x_i | \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \mathcal{N}(x_i | \mu_j, \Sigma_j)}
+        \end{equation*}
+
+        M 步：使用后验概率重新估计参数
+        \begin{align*}
+          \pi_k    & = \frac{1}{N} \sum_{i=1}^N \gamma(z_{ik})                                                      \\
+          \mu_k    & = \frac{\sum_{i=1}^N \gamma(z_{ik}) x_i}{\sum_{i=1}^N \gamma(z_{ik})}                          \\
+          \Sigma_k & = \frac{\sum_{i=1}^N \gamma(z_{ik}) (x_i - \mu_k)(x_i - \mu_k)^T}{\sum_{i=1}^N \gamma(z_{ik})}
+        \end{align*}
+        重复以上 E 步和 M 步直到收敛，即参数不再变化或者变化很小。
+\end{enumerate}
+
+\subsubsection{基于GMM进行有效厚度和含水饱和度的概率分布拟合}
+\begin{enumerate}
+  \item \textbf{有效厚度的数据准备和预处理} \\
+        我们从已有的井的数据中提取数据，采用遍历的方式，设置起始遇到可燃冰点，和终止遇到可燃冰点，得到一口井中有多少段有可燃冰的区段，然后同样的方式对其他的井进行操作，合并所有得到的段。这些段就是所有井的有效厚度列表，这个列表将用于高斯分布拟合模型的建立。
+
+  \item \textbf{有效厚度拟合曲线} \\
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.8\textwidth]{figures/task2/task2-1.png}
+          \caption{有效厚度的高斯混合模型}
+          \label{fig:NewWellsAndResource}
+        \end{figure}
+
+        在这种情况下，通过调试参数，我们发现选择 3 个高斯分布来拟合数据效果最好，即模型在三个成分时达到了最佳的拟合效果，或者说能够最好地解释数据的分布特征。这通常表明有效厚度数据中存在三个明显的聚类或者生成机制。
+  \item \textbf{含水饱和度的数据准备和预处理} \\
+        将14口井的饱和度的数据放到一个tsv文件中，同时对与无效的数据以及0点进行剔除，得到一个干净的数据集，用于高斯混合模型的拟合。
+
+  \item \textbf{含水饱和度的拟合曲线} \\
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.8\textwidth]{figures/task2/task2-3.png}
+          \caption{含水饱和度的高斯混合模型}
+        \end{figure}
+
+        在这种情况下，我们对参数进行调试，发现同样以3个高斯分布来拟合数据效果最佳，达到了理想的拟合状态。
+
+
+\end{enumerate}
+
+\subsubsection{正态分布拟合}
+正态分布拟合是指使用正态分布模型来拟合观测数据的过程。在统计学和机器学习中，我们经常需要对观测数据进行建模和分析，而正态分布是一种常用的分布模型，适用于很多自然现象和实验数据。
+\begin{enumerate}
+  \item \textbf{正态分布定义} \\
+        假设我们有一个观测数据集 $X = \{x_1, x_2, \ldots, x_N\}$，我们希望用正态分布拟合这个数据集，求出其均值 $\mu$ 和方差 $\sigma^2$。
+  \item \textbf{似然函数} \\
+        正态分布的概率密度函数为：
+        \[
+          f(x | \mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)
+        \]
+        因此，数据集的似然函数为：
+        \[
+          L(\mu, \sigma^2 | X) = \prod_{i=1}^N f(x_i | \mu, \sigma^2)
+        \]
+        取对数似然函数：
+        \[
+          \log L(\mu, \sigma^2 | X) = \sum_{i=1}^N \log f(x_i | \mu, \sigma^2)
+        \]
+  \item \textbf{最大化似然函数} \\
+        我们的目标是最大化对数似然函数以估计模型参数 $\mu$ 和 $\sigma^2$。这通常通过对参数求导并令导数为零来实现。
+
+        \subsubsection*{对 $\mu$ 求导}
+
+        \[
+          \frac{\partial}{\partial \mu} \log L(\mu, \sigma^2 | X) = \sum_{i=1}^N \frac{\partial}{\partial \mu} \log f(x_i | \mu, \sigma^2)
+        \]
+
+        利用正态分布的导数性质，我们有：
+        \[
+          \frac{\partial}{\partial \mu} \log f(x | \mu, \sigma^2) = \frac{x - \mu}{\sigma^2}
+        \]
+
+        代入上式，并令导数为零：
+        \[
+          \sum_{i=1}^N \frac{x_i - \mu}{\sigma^2} = 0
+        \]
+
+        解得：
+        \[
+          \mu = \frac{1}{N} \sum_{i=1}^N x_i
+        \]
+
+        这是均值 $\mu$ 的最大似然估计。
+
+        \subsubsection*{对 $\sigma^2$ 求导}
+
+        \[
+          \frac{\partial}{\partial \sigma^2} \log L(\mu, \sigma^2 | X) = \sum_{i=1}^N \frac{\partial}{\partial \sigma^2} \log f(x_i | \mu, \sigma^2)
+        \]
+
+        利用正态分布的导数性质，我们有：
+        \[
+          \frac{\partial}{\partial \sigma^2} \log f(x | \mu, \sigma^2) = -\frac{1}{2\sigma^2} + \frac{(x - \mu)^2}{2\sigma^4}
+        \]
+
+        代入上式，并令导数为零：
+        \[
+          \sum_{i=1}^N \left( -\frac{1}{2\sigma^2} + \frac{(x_i - \mu)^2}{2\sigma^4} \right) = 0
+        \]
+
+        解得：
+        \[
+          \sigma^2 = \frac{1}{N} \sum_{i=1}^N (x_i - \mu)^2
+        \]
+
+        这是方差 $\sigma^2$ 的最大似然估计。
+\end{enumerate}
+
+\subsubsection{基于正态分布进行孔隙度的概率分布拟合}
+\begin{enumerate}
+  \item \textbf{孔隙度的数据准备和预处理} \\
+        将14口井的地层孔隙度的数据放到一个tsv文件中，同时对与无效的数据以及0点进行剔除，得到一个干净的数据集，用于正态模型的拟合。
+        
+  \item \textbf{孔隙度拟合曲线} \\
+      \begin{figure}[h]
+        \centering
+        \includegraphics[scale=0.5]{figures/task2/task2-2.png}
+        \caption{孔隙度的正态分布模型}
+      \end{figure}
+
+        在这种情况下，通过调试参数，我们发现正态分布的拟合效果最佳，达到了预期的效果。
+
+\end{enumerate}
+
+\subsubsection{Kernel Density Estimation}
+  核密度估计（Kernel Density Estimation，KDE）是一种非参数方法，用于估计连续随机变量的概率密度函数。它通过在每个观测数据点周围放置核函数（通常是高斯核函数），然后对所有核函数进行加权平均来估计密度。
+
+  KDE 的基本公式为：
+  \[
+    \hat{f}_h(x) = \frac{1}{n} \sum_{i=1}^{n} K_h(x - x_i)
+  \]
+  其中：
+  \begin{itemize}
+    \item \( \hat{f}_h(x) \) 是在点 \( x \) 处估计的密度；
+    \item \( n \) 是数据点的数量；
+    \item \( x_i \) 是观测数据点；
+    \item \( K_h(\cdot) \) 是核函数，通常是高斯核函数，参数 \( h \) 是带宽（bandwidth），用于控制核函数的宽度。
+  \end{itemize}
+
+  高斯核函数 \( K_h(u) \) 的形式为：
+  \[
+    K_h(u) = \frac{1}{\sqrt{2\pi}h} \exp\left(-\frac{u^2}{2h^2}\right)
+  \]
+
+  KDE 的一个关键参数是带宽 \( h \)，它决定了核函数的宽度。较小的带宽会导致更细致的估计，但可能会产生过拟合；较大的带宽会导致平滑的估计，但可能会丢失一些细节。因此，选择合适的带宽对于获得良好的密度估计至关重要。
+
+  KDE 在数据可视化、密度估计、异常检测等领域都有广泛的应用。它提供了一种灵活的方法来估计数据的概率密度函数，不受特定分布形式的限制。
+
+\subsubsection{基于KDE进行有效厚度变化规律分析}
+
+  我们利用之前GMM准备好的数据采用了KDE，生成了一个二维的color mesh图。
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.8\textwidth]{figures/task2/task2-4.png}
+          \caption{有效厚度的变化规律图}
+          \label{fig:NewWellsAndResource}
+        \end{figure}
+
+\subsubsection{空间三维的kriging模型}
+  Kriging 是一种插值和空间预测技术，常用于地理空间数据分析、地质勘探、环境科学等领域。它基于空间统计学的原理，通过对已知数据点之间的空间相关性进行建模，来预测未知位置的数值。
+\begin{enumerate}
+  \item \textbf{基本假设} \\
+    假设我们有 $n$ 个已知的观测点 $(x_i, y_i, z_i)$，对应的观测值为 $Z(x_i, y_i, z_i)$，我们希望在未知点 $(x, y, z)$ 处估计变量值 $Z(x, y, z)$。
+
+  \item \textbf{半方差函数的定义} \\
+    假设 $h$ 是空间上两个点之间的距离，我们定义半方差函数 $\gamma(h)$ 为：
+
+    \[
+    \gamma(h) = \frac{1}{2} \text{Var}[Z(x_i, y_i, z_i) - Z(x_i+h, y_i+h, z_i+h)]
+    \]
+    
+    其中，$\text{Var}[\cdot]$ 表示方差。这个公式描述了在距离 $h$ 处的两个点之间变量值的变化程度。
+  \item \textbf{克里金模型的基本公式} \\
+    克里金模型的基本公式为：
+
+    \[
+    Z(x, y, z) = \sum_{i=1}^{n} \lambda_i \cdot Z(x_i, y_i, z_i)
+    \]
+    
+    其中，$\lambda_i$ 是权重，用于对已知点的观测值进行加权求和。
+  \item \textbf{最小均方误差} \\
+    我们希望通过最小化预测值 $Z(x, y, z)$ 与真实值 $Z(x, y, z)$ 之间的均方误差来确定权重 $\lambda_i$。
+  \item \textbf{最小化均方误差的优化问题} \\
+    定义误差 $e(x, y, z) = Z(x, y, z) - \sum_{i=1}^{n} \lambda_i \cdot Z(x_i, y_i, z_i)$，则我们的目标是最小化误差的平方和：
+
+    \[
+    \min_{\lambda_i} \sum_{i=1}^{n} e^2(x, y, z)
+    \]
+
+\end{enumerate}
+
+
+\subsubsection{基于Kriging进行孔隙度和含水饱和度的变化规律分析}
+\begin{enumerate}
+  \item \textbf{孔隙度在空间中的数值分布} \\
+        \begin{figure}[h]
+          \centering
+          \includegraphics[scale=0.4]{figures/task2/task2-5-1.png}
+          \caption{孔隙度kriging3D图}
+          \label{fig:NewWellsAndResource}
+        \end{figure}
+  \item \textbf{孔隙度在空间中的数值分布误差} \\
+        \begin{figure}[h]
+          \centering
+          \includegraphics[scale=0.4]{figures/task2/task2-5-2.png}
+          \caption{孔隙度kriging3D误差图}
+          \label{fig:NewWellsAndResource}
+        \end{figure}
+        
+  \item \textbf{含水饱和度在空间中的数值分布} \\
+        \begin{figure}[h]
+          \centering
+          \includegraphics[scale=0.4]{figures/task2/task2-6-1.png}
+          \caption{含水饱和度kriging3D图}
+          \label{fig:NewWellsAndResource}
+        \end{figure}
+  \item \textbf{含水饱和度在空间中的数值分布误差} \\
+        \begin{figure}[h]
+          \centering
+          \includegraphics[scale=0.4]{figures/task2/task2-6-2.png}
+          \caption{含水饱和度kriging3D误差图}
+          \label{fig:NewWellsAndResource}
+        \end{figure}
+
+\end{enumerate}
+
 
 
 \subsection{问题 三的求解和分析 的求解和分析 的求解和分析}
