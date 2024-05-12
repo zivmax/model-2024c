@@ -265,7 +265,7 @@
 \subsubsection{对问题的求解}
 
 \subsection{问题4模型的建立和求解}
-\subsubsection{二维 Kriging 插值模型建立}
+\subsubsection{二维 Kriging 插值模型的建立}
 二维 Kriging 插值是一种高级的地统计学方法，用于预测空间数据的分布。在本研究中，我们使用普通Kriging模型（Ordinary Kriging）来估计未知位置的资源量，基于已知井点的资源数据。
 
 \begin{enumerate}
@@ -303,6 +303,9 @@
   \item \textbf{插值和预测} \\
         最后，使用解得的权重系数 $\lambda_i$ 和模型参数，我们可以计算任意位置 $x$ 的资源量预测值 $Z(x)$。这一过程涉及到在整个研究区域内创建一个平面网格，并在每个网格点上应用上述Kriging公式进行资源量预测。
 \end{enumerate}
+
+\subsubsection{二维 Kriging 插值模型的求解}
+
 
 \subsubsection{粒子群优化算法的数学模型}
 粒子群优化（PSO）是一种基于群体的优化技术，模拟鸟群的社会行为来寻找问题的最优解。每个粒子代表潜在的解决方案，在解空间中按照简单的数学规则移动。
