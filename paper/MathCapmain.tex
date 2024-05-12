@@ -58,6 +58,30 @@
 
 \usepackage[font=small,labelfont={bf,sf},tableposition=top]{caption}
 
+% 我们团队自己的定制化操作
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+% 修改 section
+\renewcommand\section{\@startsection{section}{1}{0pt}%
+    {3.5ex plus 1ex minus .2ex}%
+    {2.3ex plus .2ex}%
+    {\normalfont\LARGE\bfseries}}
+% 修改 subsection
+\renewcommand\subsection{\@startsection{subsection}{2}{0pt}%
+    {3.25ex plus 1ex minus .2ex}%
+    {1.5ex plus .2ex}%
+    {\normalfont\Large\bfseries}}
+    % subsubsection标题的缩进
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{1em}%
+  {4ex plus 1ex minus .2ex}%
+  {0.2ex plus .2ex}%
+  {\normalfont\large\bfseries}}
+\makeatother
+
+\usepackage[backend=biber,style=gb7714-2015,gbfieldtype=true]{biblatex}
+\addbibresource[location=local]{references.bib} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 \begin{abstract}
   \input{Abstract}
@@ -135,10 +159,9 @@
 对问题1研究的意义的分析。
 
 \subsection{问题4的分析}
-问题1属于$\cdots\cdots$数学问题，对于解决此类问题一般数学方法的分析。
-对附件中所给数据特点的分析。
-对问题1所要求的结果进行分析。
-对问题1研究的意义的分析。
+问题4属于空间优化和资源分配的数学问题。
+在解决此类问题时，通常需要采用多目标优化方法来平衡不同的优化目标。
+本问题中，需要在保证新井位置的离散性的同时，最大化这些新井所能探测到的总资源量。
 
 
 \section{模型假设}
@@ -152,19 +175,27 @@
 
 \section{名词解释与符号说明}
 
-\textcolor{red}{一般都会有符号解释和说明，对于一些装有的专有名词解释，需要的时候就需要对其进行解释与说明，我们以下面几个例子为例。}
-
 \subsection{名词解释与说明}
 \begin{enumerate}
-  \item \wordc{有效厚度：}是指储油层中具有工业产油能力的那部分油层的厚
+  \item \wordc{有效厚度：}
+        是指储油层中具有工业产油能力的那部分油层的厚
         度，即工业油井内具可动油的储集层的厚度。有非 0 饱和度的点存在
         天然气水合物。
-  \item \wordc{水合物饱和度：}在具体条件下，通过修正系数对理论通行能力修正后得到的单
+  \item \wordc{水合物饱和度：}
+        在具体条件下，通过修正系数对理论通行能力修正后得到的单
         位时间内所能通过的最大交通量。
-  \item \wordc{产气量因子：}指 1 立方米天然气水合物能量相当于多少立方
+  \item \wordc{产气量因子：}
+        指 1 立方米天然气水合物能量相当于多少立方
         米的天然气的热值。
-
+  \item \wordc{粒子群优化算法（PSO）：}
+        是一种基于群体智能的优化工具，通过模拟鸟群的社会行为来寻找问题的最优解。
+        算法中，每个“粒子”代表解空间中的一个潜在解，它们根据个体和群体的经验来调整自己的位置，以寻找最优解。
+  \item \wordc{Kriging插值法：}
+        是一种基于统计学的空间插值技术，广泛用于地质统计和空间分析。
+        该方法利用变异函数来评估空间数据点之间的相关性，从而预测未知位置的值，
+        优势在于能够提供插值误差估计，从而增强插值结果的可靠性。
 \end{enumerate}
+
 
 \subsection{主要符号与说明}
 
@@ -174,30 +205,29 @@
   \small
   \begin{tabular}{p{60pt}<{\centering}|p{60pt}<{\centering}p{180pt}<{\raggedright}}
     \hline
-    \headcol 序号 & 符号           & 符号说明（定义）           \\
+    \headcol 标号 & 符号       & 符号说明（定义）                            \\
     \hline
-    1           & $\nu$        & 行车速度（km/h）         \\
-    2           & t$_{\min}$   & 车头最小时距（s）          \\
-    3           & $J_{\rm a}$  & 车头最小间隔（m）          \\
-    4           & $J_{\rm z}$  & 车辆平均长度（m）          \\
-    5           & $J_{\gamma}$ & 车辆的制动距离（m）         \\
-    6           & $J_{\max}$   & 司机在反应时间内车辆行驶的距离（m） \\
-    7           & $A_{\max}$   & 最大交通量              \\
-    8           & $\alpha_{1}$ & 车道数修正系数            \\
-    9           & $\alpha_{2}$ & 车道宽度和侧向净宽修正系数      \\
-    10          & $\alpha_{3}$ & 大型车修正系数            \\
-    11          & $\alpha_{4}$ & 驾驶员技术水平修正系数        \\
-    12          & $K_{j}$      & 阻塞密度               \\
-    13          & $\nu_{f}$    & 自由车速               \\                                         \\
+    Q           & $Q$      & 天然气体积的净热值   (m$^2$)                 \\
+    A           & $A$      & 表面面积   (m$^2$)                      \\
+    Z           & $Z$      & 产气量因子                               \\
+    $\phi$      & $\phi$   & 孔隙度                                 \\
+    S           & $S$      & 水合物饱和度                              \\
+    E           & $E$      & 气泡里困存，即位于水合物颗粒表面的天然气  (m$^3$/m$^2$) \\
+    $x_i$       & $x_i$    & 第 $i$ 个位置点的横坐标   (m)                \\
+    $y_i$       & $y_i$    & 第 $i$ 个位置点的纵坐标   (m)                \\
+    $z_i$       & $z_i$    & 第 $i$ 个位置点的高度   (m)                 \\
+    $\phi_i$    & $\phi_i$ & 第 $i$ 个位置点的孔隙度                      \\
+    $S_i$       & $S_i$    & 第 $i$ 个位置点的水合物饱和度                   \\
     \hline
   \end{tabular}
   %\caption{符号与说明}
-  \label{symbol}
+  \label{tab:symbol}
 \end{table}
+
 
 \section{模型的建立与求解}
 
-数据的预处理：
+\subsection{数据的预处理}：
 根据题目需求描述，我们需要对每个井位下的天然气水合物含量、有效厚度、饱和度、概率分布等变化规律进行分析与建模，附件一和附件二提供了钻井测量数据，井位信息，但数据存在部分误差，以及失访情况下造成的数据缺失，需要对原始数据进一步处理方可使用。
 \begin{enumerate}
   \item 格式标准化：为确保数据处理的一致性和后续分析的顺利进行，我们手动对所提供数据的分隔符进行了统一。具体操作主要有三：将数据中的分隔符不统一问题统一转换为制表符；将原始数据文件的编码格式由GDK转换为UTF-8编码防止出现读取乱码问题；所有文件按照英文命名规则进行重命名。
@@ -237,140 +267,147 @@
 
 \subsubsection{对问题的求解}
 
-\textbf{模型 Ⅱ—基于 负荷度 负荷度 分析 的小区开放影响度综合评价}
+\subsection{问题4模型的建立和求解}
+\subsubsection{二维 Kriging 插值模型的建立}
+二维 Kriging 插值是一种高级的地统计学方法，用于预测空间数据的分布。在本研究中，我们使用普通Kriging模型（Ordinary Kriging）来估计未知位置的资源量，基于已知井点的资源数据。
 
-（1）模型的准备
+\begin{enumerate}
+  \item \textbf{数据准备和预处理} \\
+        首先，我们从已有的井点数据中提取坐标 $(x_i, y_i)$ 和对应的资源量 $z_i$。这些数据点作为Kriging插值的输入，用于构建空间连续性模型。
 
-1）负荷度介绍
+  \item \textbf{普通Kriging模型} \\
+        普通Kriging模型的基本公式可以表示为:
+        \[
+          Z(x) = \mu + \sum_{i=1}^n \lambda_i (Z(x_i) - \mu)
+        \]
+        其中，$Z(x)$ 是在位置 $x$ 的预测值，$\mu$ 是未知常数（通常是全局均值），$Z(x_i)$ 是已知数据点的值，$\lambda_i$ 是权重系数，$n$ 是用于预测的已知数据点的数量。
 
-负荷度（ V/CV/CV/C）是指在理想条件下，最大服务交通量与基本行能力之比．
+  \item \textbf{变异函数和模型参数} \\
+        在Kriging方法中，变异函数（semivariogram）是描述空间数据点之间关系的关键。在本研究中，我们选择球形变异函数模型，其表达式为：
+        \[
+          \gamma(h) =
+          \begin{cases}
+            C_0 + C \left( \frac{3h}{2a} - \frac{h^3}{2a^3} \right) & \text{if } h \leq a \\
+            C_0 + C                                                 & \text{if } h > a
+          \end{cases}
+        \]
+        其中，$h$ 是空间距离，$C_0$ 是块金效应（nugget effect），$C$ 是基台值（sill），$a$ 是变程（range），即空间相关性的最大距离。
 
-2）数据处理
+  \item \textbf{权重系数的确定} \\
+        权重系数 $\lambda_i$ 通过解决Kriging方程来确定，确保预测误差最小化。Kriging方程可以表示为：
+        \[
+          \sum_{j=1}^n \lambda_j \gamma(x_i, x_j) + \mu = \gamma(x_i, x)
+        \]
+        对于所有 $i = 1, 2, \ldots, n$。此外，为了保证无偏估计，权重的和应该满足：
+        \[
+          \sum_{i=1}^n \lambda_i = 1
+        \]
 
-将道路分为主干和次，其要参数详见 表 10
+  \item \textbf{插值和预测} \\
+        最后，使用解得的权重系数 $\lambda_i$ 和模型参数，我们可以计算任意位置 $x$ 的资源量预测值 $Z(x)$。这一过程涉及到在整个研究区域内创建一个平面网格，并在每个网格点上应用上述Kriging公式进行资源量预测。
+\end{enumerate}
 
-\begin{table*}[h!]
-  \centering
-  \small
-  \tabcolsep 2.5pt
-  \caption{主次道路参数表}
-  \begin{tabular*}{0.8\linewidth}{p{60pt}<{\centering}p{60pt}<{\centering}
-    p{60pt}<{\centering}p{80pt}<{\centering}p{80pt}<{\centering}}
-    \toprule
-    道路类型  &  主干路  &  支干路  &  小区内宽道路  &  小区内窄道路  \\
-    \midrule
-    行车速度  & 50 km / h & 40 km / h & 30 km / h & 20 km / h \\
-    车道数  & 4 & 3 & 2 & 1 \\
-    \bottomrule
-  \end{tabular*}
-  \label{tab10}
-\end{table*}
+\subsubsection{二维 Kriging 插值模型的求解}
 
-（2）模型的建立
+\begin{enumerate}
+  \item \textbf{实验半方差图结果分析} \\
+        如图 \ref{fig:KrigingSemivariogram} 所示，实验半方差图显示了理论模型（黑色曲线）与实际观测数据点（红色星号）的对比。主要观察结果包括：
+        \begin{itemize}
+          \item 实际数据点大体上遵循理论模型的趋势，表明所选的球形变异函数模型是合适的。
+          \item 在较小的空间距离 \( h \) 上，数据点与理论曲线较为接近，说明在小范围内，空间自相关性较强。
+          \item 随着 \( h \) 的增加，实际数据点的分布开始波动，可能反映了在较大距离上空间自相关性的减弱。
+        \end{itemize}
 
-1）小区的分类
-
-根据小区结构，周边道路分布形状和周边道路车道数的不同，我们将小区分
-别分为~4、2、3 类，小区的分类结果详见表~11
-
-
-2）计算周边各路段及交叉口的通行能力
-
-
-对于周边各路段的通行能力，我们运用问题二已建立的模型进行计算．在此
-基础上对于交叉口的通行能力交叉口~G 我们建立公式如下：
-
-\begin{align}
-  G_{\text{交又口}} & =\sum_{i=1}^{n} G_{i} \\
-  G_{i}          & =\sum_{j=1}^{k} C_{j}
-\end{align}
-
-
-其中，$C_{j}$ 为进口各车道的通行能力，$ G_{i}$ 为交叉口各进口的通行能力．
-
-
-3）建立影响度综合评价体系~[9][10][11]
-
-我们采用先单项评价再综合评价的方法，其总体思路见表~12
-
-\begin{table*}[h!]
-  \centering
-  \small
-  \tabcolsep 2.5pt
-  \caption{小区分类表}
-  \begin{tabular*}{0.8\linewidth}{p{100pt}<{\centering}|p{60pt}<{\raggedright}|p{180pt}<{\raggedright}}
-    \hline
-    分类标准 & 类型名称& 类型说明\\
-    \hline
-    \multirow{4}*{小区结构 }& A组团有序型 & 小区楼房呈组团型分布,每一区域间隔较大,开放后小区
-    道路较宽,且区域间分布有序\\
-
-    & B紧凑有序型 & 小区楼房间隔紧凑,且排列有序,开放后道路网格呈“街
-    区型”,特点为“高密度、窄路宽．\\
-    &C组团无序型& 小区楼房呈组团式分布,每一区域间隔较大,开放后小区
-    道路较宽,但区域间分布杂乱小区楼房间隔紧凑,但排列杂乱,开放后小区道路呈现“低\\
-    &D紧凑无序型&密度,窄路宽”的特点\\
-
-    \multirow{2}*{周边道路形状分布}& 四周围绕型&四周均为道路\\
-
-    &半边包围型&半边围绕道路\\
-
-    \multirow{3}*{车道数(针对半封闭性)}& 主干道型 & 两条道路均为主干道\\
-
-    &次干道型 & 两条道路均为次干道\\
-
-    &混合型& 两条道路一主一次\\
-    \hline
-  \end{tabular*}
-  \label{tab11}
-\end{table*}
-
-\begin{table*}[h!]
-  \centering
-  \small
-  \tabcolsep 2.5pt
-  \caption{综合评价思路表}
-  \begin{tabular*}{0.8\linewidth}{p{100pt}<{\centering}|p{160pt}<{\raggedright}|p{80pt}<{\raggedright}}
-    \hline
-    评价性质  &  评价内容  &  评价指标  \\
-    \hline
-    \multirow{2}*{ 单项评价 } & \multirow{2}*{  局部路段及交叉口交通负荷影响 } &  路段影响度  \\
-    & &交叉口影响\\
-    \multirow{2}*{ 综合评价 } & \multirow{2}*{整个路网交通负荷影响} &平均路段影响度  \\
-    &&平均交叉口影响度\\
-    \hline
-  \end{tabular*}
-  \label{tab12}
-\end{table*}
-
-A. 负荷度单项评价
-
-a. 封闭式小区开放后，新增小区内道路对于周边某一路段i 的影响度 $K_{si}$
-根据公式计算：
-\begin{align}
-  K_{s i}   & =\dfrac{I_{s i p}-I_{s i b}}{B_{s i}} \\
-  I_{s i p} & =I_{s i b}+a
-\end{align}
-
-其中，$I _{sip}$ 为小区道路建成后路段 i 上高峰小时交通量，$I _{sib}$ 为不考虑小区道
-路建成后新增交通量的情况下，路段 i 的高峰小时交通量，  $B_{s i}$  为路段 $i$ 的设计
-通行能力，$a$ 为开放后小区道路的通行量．
-b. 封闭式小区开放后，新增小区内道路对于周边道路交叉口的影响度  $K_{c i}$
-根据公式计算:
-\begin{align}
-  K_{c i}=\dfrac{I_{c i p}-I_{c b}}{B_{c t}}
-\end{align}
+        % Insert pics
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.5\textwidth]{figures/task4/task4-1.png}
+          \caption{实验半方差图结果}
+          \label{fig:KrigingSemivariogram}
+        \end{figure}
 
 
-其中，$K_a$ 为小区道路建成后对交叉口 i 的影响度，$I_{crp}$ 为小区道路建成后交 叉口 $i$
-上高峰小时交通量， $ I_{c i b}$  为不考虑小区道路建成后新增交通量的情况下, 交叉口 i 的
-高峰小时交通量，  $B_{c i}$  为交叉口 $i$ 的设计通行能力．
+  \item \textbf{预测误方差与插值结果分析} \\
+        第二张图片（图 \ref{fig:KrigingInterpolation}）展示了 Kriging 预测的方差（左图）和资源量的插值结果（右图）。分析如下：
+        \begin{itemize}
+          \item \textbf{预测误方差图（左图）}：
+                \begin{itemize}
+                  \item 显示了各个位置的预测误差大小，颜色越亮（趋向黄色）表示预测的不确定性越大。
+                  \item 在已知数据点附近，预测误差较小，显示模型在数据点附近具有较高的信度。
+                  \item 数据点间的区域预测误差增大，反映了这些区域内插值的不确定性较高。
+                \end{itemize}
+          \item \textbf{资源量插值结果图（右图）}：
+                \begin{itemize}
+                  \item 此图显示了整个区域的资源量预测分布。颜色越亮（趋向黄色）表示预测的资源量越高。
+                  \item 资源量的高值区主要集中在某些特定区域，可能与原始数据点的分布和地质特性有关。
+                  \item 插值结果显示了资源分布的空间变异性，有助于理解资源在研究区域内的分布特征。
+                \end{itemize}
+        \end{itemize}
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.8\textwidth]{figures/task4/task4-2.png}
+          \caption{预测误方差（左）和 插值结果（右）}
+          \label{fig:KrigingInterpolation}
+        \end{figure}
+\end{enumerate}
 
 
-\begin{figure}[h!t]
-  \centerline{\includegraphics[scale=1]{fig1.pdf}}
-  \caption{\song\wuhao 图~3的标题名称}
-\end{figure}
+
+\subsubsection{粒子群优化算法的数学模型}
+粒子群优化（PSO）是一种基于群体的优化技术，模拟鸟群的社会行为来寻找问题的最优解。每个粒子代表潜在的解决方案，在解空间中按照简单的数学规则移动。
+
+\begin{enumerate}
+  \item \textbf{粒子的表示} \\
+        在PSO中，粒子$i$在$d$维搜索空间中的位置表示为$\mathbf{x}_i = (x_{i1}, x_{i2}, \ldots, x_{id})$，速度表示为$\mathbf{v}_i = (v_{i1}, v_{i2}, \ldots, v_{id})$。每个粒子还维护一个个人最优位置$\mathbf{p}_{\text{best},i}$，即该粒子历史上遇到的最优位置。
+
+  \item \textbf{速度和位置更新} \\
+        粒子的速度和位置通过以下公式更新：
+        \[
+          \mathbf{v}_i^{(t+1)} = w \mathbf{v}_i^{(t)} + c_1 r_1 (\mathbf{p}_{\text{best},i} - \mathbf{x}_i^{(t)}) + c_2 r_2 (\mathbf{g}_{\text{best}} - \mathbf{x}_i^{(t)})
+        \]
+        \[
+          \mathbf{x}_i^{(t+1)} = \mathbf{x}_i^{(t)} + \mathbf{v}_i^{(t+1)}
+        \]
+        其中，$w$是惯性权重，控制粒子速度的保留程度；$c_1$和$c_2$是学习因子，通常称为认知和社会参数；$r_1$和$r_2$是[0,1]区间内的随机数，代表随机性；$\mathbf{g}_{\text{best}}$是全局最优位置，即所有粒子历史上遇到的最优位置。
+
+  \item \textbf{参数选择} \\
+        惯性权重$w$通常设置为0.7至0.9之间，有助于控制搜索的全局和局部探索能力。学习因子$c_1$和$c_2$通常设置为相同的值，比如1.5，这样可以平衡个体经验和群体经验的影响。
+
+  \item \textbf{初始化和迭代过程} \\
+        每个粒子的初始位置和速度通常是随机生成的。在每次迭代中，根据上述规则更新所有粒子的速度和位置。同时，更新每个粒子的个人最优位置以及全局最优位置。迭代继续进行，直到满足最大迭代次数或其他终止条件。
+
+  \item \textbf{目标函数和优化目标} \\
+        PSO目标是找到使目标函数$J(x)$最大化的解$\mathbf{x}$。在本文中，目标函数是最大化新井位置的预测资源总量和最小化井点间的最短距离的负值。
+\end{enumerate}
+
+
+\subsubsection{基于 Kriging 插值的优化模型建立}
+
+在 Kriging 模型的求解结果和粒子群优化算法的基础上，我们进一步建立了一个优化模型，旨在确定新井的最佳位置，以最大化资源的总探测量和井点之间的距离。模型的目标函数综合考虑了新井之间以及新旧井之间的最小距离和新井位置的预测资源总量。
+
+\begin{enumerate}
+  \item \textbf{目标函数定义} \\
+        设计目标函数如下，用于评估新井布置的质量：
+        \[
+          J(x) = -\left(\min(\text{dist}(x_i, x_j)) + \sum_{k=1}^{n} Z(x_k, y_k)\right)
+        \]
+        其中，$n$ 为新井的数量，$x = \{(x_1, y_1), (x_2, y_2), \ldots, (x_{n}, y_{n})\}$ 表示新井的位置，$\text{dist}(x_i, x_j)$ 表示所有井点（包括现有和新井）之间的欧氏距离矩阵，$Z(x_k, y_k)$ 是在位置 $(x_k, y_k)$ 的预测资源量，通过 Kriging 插值得到。
+
+  \item \textbf{优化算法选择} \\
+        我们采用粒子群优化（PSO）算法来解决这一多目标优化问题。PSO 是一种基于群体的随机优化技术，通过模拟鸟群的社会行为来搜索最优解。在本问题中，每个粒子代表一组潜在的新井位置，粒子通过迭代更新其位置，以寻找使目标函数最大化的解。
+
+  \item \textbf{粒子群优化参数设置} \\
+        在 PSO 算法中，我们设置了如下参数：个体学习因子$c_1$、社会学习因子$c_2$和惯性权重$w$。这些参数控制粒子更新其速度和位置的方式，其中$c_1$和$c_2$通常设置为1.5，$w$设置为0.7。
+
+  \item \textbf{约束条件和边界} \\
+        新井的位置受到现有井位置的范围约束，即每个新井的坐标$(x, y)$必须在现有井的最小和最大坐标范围内。这确保了新井的位置在合理的探测区域内。
+
+  \item \textbf{优化执行} \\
+        优化过程包括初始化一定数量的粒子，每个粒子代表一组新井的位置。通过迭代，每个粒子根据其自身经验和群体经验更新位置，直到达到最大迭代次数或满足其他终止条件。最终，算法输出最优的新井位置和相应的目标函数值。
+\end{enumerate}
+
+\subsubsection{优化模型的求解}
+
 
 
 \section{模型的评价与推广 模型的评价与推广}
@@ -511,42 +548,12 @@ b. 封闭式小区开放后，新增小区内道路对于周边道路交叉口�
 
 \newpage
 
-\begin{thebibliography}{99}
-  \addcontentsline{toc}{section}{参考文献}
-  \bibitem{1} 张金川.页岩气成藏机理和分布[J].天然气工业,2004,(7):15-18.
+\nocite{*}
+\printbibliography
 
-  \bibitem{2} 粟科华.天然气水合物三维成藏物模实验系统的构建与检验[J].天然气工业,2013,(12):173-178.
-  \bibitem{3} 梁金强.天然气水合物资源量估算方法及应用[J].地质通报,2006,(9):1205-1210.
-  \bibitem{4} 黄杰.基于核密度估计的基本概率指派生成方法[J].计算机应用研究,2020,(7):2037-2040,2044.
-  \bibitem{5} 【前沿论坛】庞雄奇：深层致密介质中油气富集成藏动力机制与演化模式
-  \url{http://www.igg.cas.cn/xwzx/cutting_edge/202107/t20210728_6149403.html}
-  \bibitem{6}Cressie N. The origins of kriging[J]. Mathematical geology, 1990, 22: 239-252.
-  \bibitem{7}Li X J, Wang C H, Zhu H H. Kriging interpolation and its application to generating stratum model[J]. Rock and soil mechanics, 2009, 30(1): 157-162.
-  \bibitem{8}Oliver M A, Webster R. Kriging: a method of interpolation for geographical information systems[J]. International Journal of Geographical Information System, 1990, 4(3): 313-332.
-  \bibitem{9}
-
-\end{thebibliography}
 \newpage
 
 \begin{appendices}
-
-  \section*{问题 1 的相关数据与程序}
-
-  \textbf{{0.98,0.00,0.00}{程序一：MATLAB算道路车辆通行能力:}}
-  \lstinputlisting[language=Matlab]{./code/mcmthesis-matlab1.m}
-
-  \section*{}
-
-  \textcolor[rgb]{0.98,0.00,0.00}{\textbf{程序二：C++ 求解路网正体影响度:}}
-  \lstinputlisting[language=C++]{./code/mcmthesis-sudoku.cpp}
-
-  \newpage
-  \def\thesection{A}
-  \renewcommand{\thetable}{\wuhao A-\arabic{table}}
-  \setcounter{table}{0}
-  \section*{数据表格}
-  \textcolor[rgb]{0.98,0.00,0.00}{\textbf{表格数据：}}
-  \input{Appendices1}
 
 \end{appendices}
 \end{document}
