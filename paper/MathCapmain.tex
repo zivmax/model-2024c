@@ -205,23 +205,24 @@
   \small
   \begin{tabular}{p{60pt}<{\centering}|p{60pt}<{\centering}p{180pt}<{\raggedright}}
     \hline
-    \headcol 标号 & 符号       & 符号说明（定义）              \\
+    \headcol 标号 & 符号       & 符号说明（定义）                     \\
     \hline
-    Q           & $Q$      & 天然气水合物资源量 (m$^2$)     \\
-    A           & $A$      & 表面面积   (m$^2$)        \\
-    Z           & $Z$      & 有效厚度                  \\
-    $\phi$      & $\phi$   & 孔隙度                   \\
-    S           & $S$      & 水合物饱和度                \\
-    E           & $E$      & 产气量因子                 \\
-    $x_i$       & $x_i$    & 第 $i$ 个位置点的横坐标   (m)  \\
-    $y_i$       & $y_i$    & 第 $i$ 个位置点的纵坐标   (m)  \\
-    $z_i$       & $z_i$    & 第 $i$ 个位置点的高度   (m)   \\
-    $\phi_i$    & $\phi_i$ & 第 $i$ 个位置点的孔隙度        \\
-    $S_i$       & $S_i$    & 第 $i$ 个位置点的水合物饱和度     \\
-    $Q_i$       & $Q_i$    & 第 $i$ 个位置点的水合物资源量    \\
-    $x_j$       & $x_j$    & 第 $j$ 个勘探井位的横坐标   (m) \\
-    $y_j$       & $y_j$    & 第 $j$ 个勘探井位的纵坐标   (m) \\
-    $Q_j$       & $Q_j$    & 第 $j$ 个勘探井位的水合物资源量    \\
+    Q           & $Q$      & 天然气水合物资源量 (m$^2$)            \\
+    A           & $A$      & 表面面积   (m$^2$)               \\
+    Z           & $Z$      & 有效厚度                         \\
+    $\phi$      & $\phi$   & 孔隙度                          \\
+    S           & $S$      & 水合物饱和度                       \\
+    E           & $E$      & 产气量因子                        \\
+    $x_i$       & $x_i$    & 第 $i$ 个位置点的横坐标   (m)         \\
+    $y_i$       & $y_i$    & 第 $i$ 个位置点的纵坐标   (m)         \\
+    $z_i$       & $z_i$    & 第 $i$ 个位置点的高度   (m)          \\
+    $\phi_i$    & $\phi_i$ & 第 $i$ 个位置点的孔隙度               \\
+    $S_i$       & $S_i$    & 第 $i$ 个位置点的水合物饱和度            \\
+    $Q_i$       & $Q_i$    & 第 $i$ 个位置点的水合物资源量            \\
+    $x_j$       & $x_j$    & 第 $j$ 个勘探井位的横坐标   (m)        \\
+    $y_j$       & $y_j$    & 第 $j$ 个勘探井位的纵坐标   (m)        \\
+    $Q_j$       & $Q_j$    & 第 $j$ 个勘探井位的水合物资源量           \\
+    $Q_k$       & $Q_k$    & 第 $k$ 个位置点的 Kriging 插值水合物资源量 \\
     \hline
     \hline
   \end{tabular}
@@ -267,10 +268,19 @@
 \subsection{问题3模型的建立和求解}
 
 \subsubsection{问题3模型的建立}
-对于资源量的概率分布估计，我们沿用了问题2中的 KDE 方法，通过核密度估计来估计资源量的概率分布。
+对于资源量的概率分布估计，我们沿用了问题2中的二维 KDE 方法，通过核密度估计来估计资源量的概率分布，并且依然采用高斯内核。
 
+因此 KDE 计算表达式为：
+\[
+  f(x, y) = \frac{1}{Q_k} \sum_{i=1}^{Q_k} \frac{1}{2\pi h^2} \exp \left( -\frac{(x-x_i)^2 + (y-y_i)^2}{2h^2} \right)
+\]
 
+而对于勘探区域内资源总量的估计，我们可以直接利用问题2中得到的孔隙度和饱和度的 Kringing 插值结果，估算空间内每个位置点的资源量，所有求和即可得到总资源量的概率分布估计。
 
+对于这个建模我们可以得到表达式：
+\[
+  Q_{\text{total}} = \sum_{k=1}^{n} Q_k
+\]
 
 \subsection{问题4模型的建立和求解}
 \subsubsection{二维 Kriging 插值模型的建立}
@@ -316,6 +326,13 @@
 
 \begin{enumerate}
   \item \textbf{实验半方差图结果分析} \\
+        % Insert pics
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.4\textwidth]{figures/task4/task4-1.png}
+          \caption{实验半方差图结果}
+          \label{fig:KrigingSemivariogram}
+        \end{figure}
         如图 \ref{fig:KrigingSemivariogram} 所示，实验半方差图显示了理论模型（黑色曲线）与实际观测数据点（红色星号）的对比。主要观察结果包括：
         \begin{itemize}
           \item 实际数据点大体上遵循理论模型的趋势，表明所选的球形变异函数模型是合适的。
@@ -323,16 +340,13 @@
           \item 随着 \( h \) 的增加，实际数据点的分布开始波动，可能反映了在较大距离上空间自相关性的减弱。
         \end{itemize}
 
-        % Insert pics
+  \item \textbf{预测误方差与插值结果分析} \\
         \begin{figure}[h]
           \centering
-          \includegraphics[width=0.5\textwidth]{figures/task4/task4-1.png}
-          \caption{实验半方差图结果}
-          \label{fig:KrigingSemivariogram}
+          \includegraphics[width=0.8\textwidth]{figures/task4/task4-2.png}
+          \caption{预测误方差（左）和 插值结果（右）}
+          \label{fig:KrigingInterpolation}
         \end{figure}
-
-
-  \item \textbf{预测误方差与插值结果分析} \\
         第二张图片（图 \ref{fig:KrigingInterpolation}）展示了 Kriging 预测的方差（左图）和资源量的插值结果（右图）。分析如下：
         \begin{itemize}
           \item \textbf{预测误方差图（左图）}：
@@ -348,12 +362,13 @@
                   \item 插值结果显示了资源分布的空间变异性，有助于理解资源在研究区域内的分布特征。
                 \end{itemize}
         \end{itemize}
-        \begin{figure}[h]
-          \centering
-          \includegraphics[width=0.8\textwidth]{figures/task4/task4-2.png}
-          \caption{预测误方差（左）和 插值结果（右）}
-          \label{fig:KrigingInterpolation}
-        \end{figure}
+
+        我们还利用二维 Kriging 插值的结果再次估计勘探区域的资源总量，即
+        \[
+          Q_{\text{total}} = \sum_{k=1}^{n} Q_k
+        \]。
+        最终的到 50355145428.42452 的结果，这与问题三中利用孔隙度和饱和度三维 Kringing 插值结果求出的资源总量 44417499906.32 误差仅约为 10\%，间接验证了模型的准确性。
+
 \end{enumerate}
 
 
@@ -405,7 +420,7 @@
         在 PSO 算法中，我们设置了如下参数：个体学习因子$c_1$、社会学习因子$c_2$和惯性权重$w$。这些参数控制粒子更新其速度和位置的方式，其中$c_1$和$c_2$通常设置为1.5，$w$设置为0.7。
 
   \item \textbf{约束条件和边界} \\
-        新井的位置受到现有井位置的范围约束，即每个新井的坐标$(x, y)$必须在现有井的最小和最大坐标范围内。这确保了新井的位置在合理的探测区域内。
+        新井的位置受到现有井位置的范围约束，即每个新井的坐标$(x, y)$必须在现有井的最小和最大坐标加上了 150 m 扩展的范围内。这确保了新井的位置在合理的探测区域内。
 
   \item \textbf{优化执行} \\
         优化过程包括初始化一定数量的粒子，每个粒子代表一组新井的位置。通过迭代，每个粒子根据其自身经验和群体经验更新位置，直到达到最大迭代次数或满足其他终止条件。最终，算法输出最优的新井位置和相应的目标函数值。
@@ -417,18 +432,16 @@
 
   \item \textbf{新井位置优化结果}
 
-        首先，我们从新井的布局开始。如图 \ref{fig:NewWellsAndOldWells} 所示，新井（红色点）与现有井（蓝色点）的布局展示了新井的选址策略不仅考虑了资源量的最大化，同时也确保了合理的空间分布，避免过于集中或偏远。
-
         \begin{figure}[h]
           \centering
           \includegraphics[width=0.5\textwidth]{figures/task4/task4-3.png}
           \caption{新井位置优化结果}
           \label{fig:NewWellsAndOldWells}
         \end{figure}
+        首先，我们从新井的布局开始。如图 \ref{fig:NewWellsAndOldWells} 所示，新井（红色点）与现有井（蓝色点）的布局展示了新井的选址策略不仅考虑了资源量的最大化，同时也确保了合理的空间分布，避免过于集中或偏远。
+
 
   \item \textbf{资源量和不确定性分析}
-
-        接下来，我们通过Kriging插值的结果来分析资源量分布和不确定性。如图 \ref{fig:NewWellsAndResource} 右侧所示，Kriging插值的资源分布图显示了预测的资源量，其中颜色越暗表示资源量越高。这帮助我们验证新井位置的选择是否位于资源丰富的区域。左侧的Kriging方差图表则提供了关于预测不确定性的信息，颜色越亮表示不确定性越高，这通常出现在样本点较少的区域。
 
         \begin{figure}[h]
           \centering
@@ -436,17 +449,19 @@
           \caption{新井位置资源量情况}
           \label{fig:NewWellsAndResource}
         \end{figure}
+        接下来，我们通过Kriging插值的结果来分析资源量分布和不确定性。如图 \ref{fig:NewWellsAndResource} 右侧所示，Kriging插值的资源分布图显示了预测的资源量，其中颜色越暗表示资源量越高。这帮助我们验证新井位置的选择是否位于资源丰富的区域。左侧的Kriging方差图表则提供了关于预测不确定性的信息，颜色越亮表示不确定性越高，这通常出现在样本点较少的区域。
+
 
   \item \textbf{井点距离的离散程度分析}
-
-        最后，我们分析了添加新井前后所有井点距离的离散程度。如图 \ref{fig:NewWellsAndNoNewWells} 所示，通过箱型图和小提琴图可以看出，引入新井后，井点之间的距离的中位数有所降低，这表明新井的加入使得井点分布更加均匀。小提琴图进一步揭示了数据分布的密度和范围，展示了新井引入前后井点距离分布的变化。
-
         \begin{figure}[h]
           \centering
           \includegraphics[width=0.8\textwidth]{figures/task4/task4-5.png}
           \caption{添加新井前后，所有井距离的离散程度}
           \label{fig:NewWellsAndNoNewWells}
         \end{figure}
+
+        最后，我们分析了添加新井前后所有井点距离的离散程度。如图 \ref{fig:NewWellsAndNoNewWells} 所示，通过箱型图和小提琴图可以看出，引入新井后，井点之间的距离的中位数有所降低，这表明新井的加入使得井点分布更加均匀。小提琴图进一步揭示了数据分布的密度和范围，展示了新井引入前后井点距离分布的变化。
+
 \end{enumerate}
 
 
