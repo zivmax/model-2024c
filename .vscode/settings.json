@@ -42,4 +42,5 @@
     ],
     "latex-workshop.intellisense.citation.backend": "biblatex",
     "latex-workshop.latex.outDir": "%DIR%/build/",
+    "remote.autoForwardPortsFallback": 0,
 }
