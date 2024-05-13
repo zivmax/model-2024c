@@ -217,7 +217,7 @@
     \@keywords\par
   }
 \fi
-\newcommand{\headset}{\Huge {\the\year} 第八届“数维杯”大学生\\ 数学建模挑战赛论文}
+\newcommand{\headset}{\Huge {\the\year} 第九届“数维杯”大学生\\ 数学建模挑战赛论文}
 \newcommand{\problem}[1]{\mcmsetup{problem = #1}}
 \def\makesheet{%
   %\pagestyle{empty}%
